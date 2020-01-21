@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+    <script>
+        var todayYear = 2020;
+        var todayMonth = 1;
+
+        var ownName = prompt('Введите Ваше Имя');
+        var surname = prompt('Введите Вашу Фамилию');
+        var patron = prompt('Введите Ваше отчество');
+        var birthdayYear = Number(prompt('Введите год Вашего рождения'));
+        var birthdayMonth = Number(prompt('Введите месяц Вашего рождения'));
+
+        var userAgeYear;
+        var userAgeMonth;
+        if (todayMonth >= birthdayMonth) {
+            userAgeMonth = todayMonth - birthdayMonth;
+            userAgeYear = todayYear - birthdayYear;
+        } else {
+            userAgeMonth = todayMonth + 12 - birthdayMonth;
+            userAgeYear = todayYear - 1 - birthdayYear;
+        }
+
+        var wordMonth;
+        if (userAgeMonth === 1) {
+            wordMonth = 'месяц'
+        } else if ((userAgeMonth < 5) && (userAgeMonth !== 0)) {
+            wordMonth = 'месяца'
+        } else {
+            wordMonth = 'месяцев'
+        };
+
+        var maleGender = confirm('Ваш пол мужской?');
+        var gender;
+        if (maleGender) {
+            gender = 'мужской'
+        } else {
+            gender = 'женский'
+        };
+
+        var adHood;
+        if (maleGender && userAgeYear >= 18) {
+            adHood = 'совершеннолетний'
+        } else if (maleGender && userAgeYear < 18) {
+            adHood = 'несовершеннолетний'
+        } else if (userAgeYear >= 18) {
+            adHood = 'совершеннолетняя'
+        } else {
+            adHood = 'несовершеннолетняя'
+        }
+
+        var children = prompt('Сколько у Вас детей?');
+        var userChildren;
+        if (children === '0') {
+            userChildren = 'нет детей'
+        } else if (children === '1') {
+            userChildren = 'один ребенок'
+        } else {
+            userChildren = children + ' детей'
+        }
+
+        alert(`${surname} ${ownName} ${patron}
+        Вам ${userAgeYear} лет ${userAgeMonth} ${wordMonth}
+        Вы ${adHood}
+        У Вас ${userChildren} 
+        `);
+    </script>
+
+
+</body>
+
+</html>
