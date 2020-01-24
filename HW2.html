@@ -10,62 +10,61 @@
 <body>
 
     <script>
-        var todayYear = 2020;
-        var todayMonth = 1;
+        let todayYear = 2020;
+        let todayMonth = 1;
 
-        var ownName = prompt('Введите Ваше Имя');
-        var surname = prompt('Введите Вашу Фамилию');
-        var patron = prompt('Введите Ваше отчество');
-        var birthdayYear = Number(prompt('Введите год Вашего рождения'));
-        var birthdayMonth = Number(prompt('Введите месяц Вашего рождения'));
+        const wrongValue = 'Вы ввели некорректное значение.';
+        const onceAgain = 'еще раз';
 
-        var userAgeYear;
-        var userAgeMonth;
-        if (todayMonth >= birthdayMonth) {
-            userAgeMonth = todayMonth - birthdayMonth;
-            userAgeYear = todayYear - birthdayYear;
-        } else {
-            userAgeMonth = todayMonth + 12 - birthdayMonth;
-            userAgeYear = todayYear - 1 - birthdayYear;
+        let surname = prompt('Введите Вашу Фамилию');
+        while (!surname) {
+            surname = prompt(`${wrongValue} Ведите Вашу фамилию ${onceAgain}`)
         }
 
-        var wordMonth;
-        if (userAgeMonth === 1) {
-            wordMonth = 'месяц'
-        } else if ((userAgeMonth < 5) && (userAgeMonth !== 0)) {
-            wordMonth = 'месяца'
-        } else {
-            wordMonth = 'месяцев'
-        };
+        let ownName = prompt('Введите Ваше Имя');
+        while (!ownName) {
+            ownName = prompt(`${wrongValue} Введите Ваше имя ${onceAgain}`)
+        }
 
-        var maleGender = confirm('Ваш пол мужской?');
-        var gender;
+        let patron = prompt('Введите Ваше отчество');
+        while (!patron) {
+            patron = prompt(`${wrongValue} Ведите Ваше отчество ${onceAgain}`)
+        }
+
+        let birthdayYear = Number(prompt('Введите год Вашего рождения'));
+        while (!isFinite(birthdayYear) || !birthdayYear || birthdayYear < 1920) {
+            birthdayYear = Number(prompt(`${wrongValue} Введите год Вашего рождения ${onceAgain}`));
+        }
+
+        let birthdayMonth = Number(prompt('Введите месяц Вашего рождения'));
+        while (!isFinite(birthdayMonth) || !birthdayMonth || birthdayMonth > 12) {
+            birthdayMonth = Number(prompt(`${wrongValue} Введите месяц Вашего рождения ${onceAgain}`));
+        }
+
+        let userAgeYear = (todayMonth >= birthdayMonth) ? (todayYear - birthdayYear) : (todayYear - 1 - birthdayYear);
+        let userAgeMonth = (todayMonth >= birthdayMonth) ? (todayMonth - birthdayMonth) : (todayMonth + 12 - birthdayMonth);
+
+        let wordMonth = (userAgeMonth === 1) ? 'месяц' :
+            ((userAgeMonth < 5) && (userAgeMonth !== 0)) ? 'месяца' :
+                'месяцев';
+
+        let maleGender = confirm('Ваш пол мужской?');
+
+        let adHood;
         if (maleGender) {
-            gender = 'мужской'
+            adHood = (userAgeYear >= 18) ? 'совершеннолетний' : 'несовершеннолетний';
         } else {
-            gender = 'женский'
-        };
-
-        var adHood;
-        if (maleGender && userAgeYear >= 18) {
-            adHood = 'совершеннолетний'
-        } else if (maleGender && userAgeYear < 18) {
-            adHood = 'несовершеннолетний'
-        } else if (userAgeYear >= 18) {
-            adHood = 'совершеннолетняя'
-        } else {
-            adHood = 'несовершеннолетняя'
+            adHood = (userAgeYear >= 18) ? 'совершеннолетняя' : 'несовершеннолетняя';
         }
 
-        var children = prompt('Сколько у Вас детей?');
-        var userChildren;
-        if (children === '0') {
-            userChildren = 'нет детей'
-        } else if (children === '1') {
-            userChildren = 'один ребенок'
-        } else {
-            userChildren = children + ' детей'
+        let children = prompt('Сколько у Вас детей?');
+        while (!isFinite(Number(children)) || !children) {
+            children = prompt(`${wrongValue} Укажите, сколько у Вас детей ${onceAgain}`);
         }
+
+        let userChildren = children === '0' ? 'нет детей' :
+            children === '1' ? 'один ребенок' :
+                children + ' детей';
 
         alert(`${surname} ${ownName} ${patron}
         Вам ${userAgeYear} лет ${userAgeMonth} ${wordMonth}
@@ -73,7 +72,7 @@
         У Вас ${userChildren} 
         `);
     </script>
-
+    
 
 </body>
 

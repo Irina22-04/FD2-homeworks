@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+    <script>
+        function solveEquation(a, b, c) {
+            let discriminant = calcDiscriminant(a, b, c);
+
+            if (discriminant > 0) {
+                return positive(a, b, discriminant);
+            } else if (discriminant === 0) {
+                return zero(a, b, discriminant);
+            } else {
+                return negative();
+            }
+        }
+
+        function calcDiscriminant(a, b, c) {
+            return Math.pow(b, 2) - 4 * a * c;
+        }
+
+        function positive(a, b, discriminant) {
+            let value1 = (-b + Math.sqrt(discriminant)) / 2 * a;
+            let value2 = (-b - Math.sqrt(discriminant)) / 2 * a;
+            return `x1 = ${value1}, x2 = ${value2}`;
+        }
+
+        function zero(a, b, discriminant) {
+            return -b / 2 * a;
+        }
+
+        function negative() {
+            return 'значений нет';
+        }
+
+        console.log(solveEquation(1, -2, -3));
+        console.log(solveEquation(-1, -2, 15));
+        console.log(solveEquation(1, 12, 36));
+        console.log(solveEquation(5, 3, 7));
+    </script>
+
+</body>
+
+</html>
