@@ -62,17 +62,25 @@
             children = prompt(`${wrongValue} Укажите, сколько у Вас детей ${onceAgain}`);
         }
 
-        let userChildren = children === '0' ? 'нет детей' :
-            children === '1' ? 'один ребенок' :
-                children + ' детей';
-
+        let userChildren;
+        switch (children) {
+            case '0':
+                userChildren = 'нет детей';
+                break;
+            case '1':
+                userChildren = 'один ребенок';
+                break;
+            default:
+                userChildren = children + ' детей';
+        }
+        
         alert(`${surname} ${ownName} ${patron}
         Вам ${userAgeYear} лет ${userAgeMonth} ${wordMonth}
         Вы ${adHood}
         У Вас ${userChildren} 
         `);
     </script>
-    
+
 
 </body>
 
