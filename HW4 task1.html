@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script>
+    const getMaxValue = (checkArray) => {
+        let maxValue = checkArray[0];
+        for (let i = 1; i < checkArray.length; i++) {
+            maxValue = checkArray[i] > maxValue ? checkArray[i] : maxValue;
+        }
+        return maxValue;
+    }
+</script>
+</body>
+</html>

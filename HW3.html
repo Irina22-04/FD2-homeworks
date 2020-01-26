@@ -10,40 +10,40 @@
 <body>
 
     <script>
-        function solveEquation(a, b, c) {
-            let discriminant = calcDiscriminant(a, b, c);
+
+        const solveEquation = (a, b, c) => {
+            if (!a) {
+                return 'это линейное уравнение';
+            }
+
+            const discriminant = Math.pow(b, 2) - 4 * a * c;
 
             if (discriminant > 0) {
-                return positive(a, b, discriminant);
-            } else if (discriminant === 0) {
-                return zero(a, b, discriminant);
-            } else {
-                return negative();
+                const value1 = (-b + Math.sqrt(discriminant)) / 2 * a;
+                const value2 = (-b - Math.sqrt(discriminant)) / 2 * a;
+                return [value1, value2];
             }
+
+            if (discriminant === 0) {
+                const value1 = -b / 2 * a;
+                return [value1];
+            }
+
+            return [];
         }
 
-        function calcDiscriminant(a, b, c) {
-            return Math.pow(b, 2) - 4 * a * c;
+        const ask = (coefName) => {
+            return Number(prompt(`Введите значение коэффициента \'${coefName}\'`))
         }
 
-        function positive(a, b, discriminant) {
-            let value1 = (-b + Math.sqrt(discriminant)) / 2 * a;
-            let value2 = (-b - Math.sqrt(discriminant)) / 2 * a;
-            return `x1 = ${value1}, x2 = ${value2}`;
-        }
+        const getParam = () => {
+            const a = ask('a');
+            const b = ask('b');
+            const c = ask('c');
 
-        function zero(a, b, discriminant) {
-            return -b / 2 * a;
+            return solveEquation(a, b, c);
         }
-
-        function negative() {
-            return 'значений нет';
-        }
-
-        console.log(solveEquation(1, -2, -3));
-        console.log(solveEquation(-1, -2, 15));
-        console.log(solveEquation(1, 12, 36));
-        console.log(solveEquation(5, 3, 7));
+        
     </script>
 
 </body>

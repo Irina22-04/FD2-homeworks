@@ -16,19 +16,16 @@
         const wrongValue = 'Вы ввели некорректное значение.';
         const onceAgain = 'еще раз';
 
-        let surname = prompt('Введите Вашу Фамилию');
-        while (!surname) {
-            surname = prompt(`${wrongValue} Ведите Вашу фамилию ${onceAgain}`)
-        }
+        let surname = askParams('Введите Вашу Фамилию');
+        let ownName = askParams('Введите Ваше Имя');
+        let patron = askParams('Введите Ваше отчество');
 
-        let ownName = prompt('Введите Ваше Имя');
-        while (!ownName) {
-            ownName = prompt(`${wrongValue} Введите Ваше имя ${onceAgain}`)
-        }
-
-        let patron = prompt('Введите Ваше отчество');
-        while (!patron) {
-            patron = prompt(`${wrongValue} Ведите Ваше отчество ${onceAgain}`)
+        function askParams(phrase) {
+            let param = prompt(`${phrase}`);
+            while (!param) {
+                param = prompt(`${wrongValue} ${phrase} ${onceAgain}`)
+            }
+            return param;
         }
 
         let birthdayYear = Number(prompt('Введите год Вашего рождения'));
@@ -41,39 +38,42 @@
             birthdayMonth = Number(prompt(`${wrongValue} Введите месяц Вашего рождения ${onceAgain}`));
         }
 
-        let userAgeYear = (todayMonth >= birthdayMonth) ? (todayYear - birthdayYear) : (todayYear - 1 - birthdayYear);
-        let userAgeMonth = (todayMonth >= birthdayMonth) ? (todayMonth - birthdayMonth) : (todayMonth + 12 - birthdayMonth);
+        let birthday = todayMonth >= birthdayMonth;
 
-        let wordMonth = (userAgeMonth === 1) ? 'месяц' :
-            ((userAgeMonth < 5) && (userAgeMonth !== 0)) ? 'месяца' :
-                'месяцев';
+        let userAgeYear = getAge(birthday, todayYear, birthdayYear, -1);
+        let userAgeMonth = getAge(birthday, todayMonth, birthdayMonth, 12);
 
-        let maleGender = confirm('Ваш пол мужской?');
-
-        let adHood;
-        if (maleGender) {
-            adHood = (userAgeYear >= 18) ? 'совершеннолетний' : 'несовершеннолетний';
-        } else {
-            adHood = (userAgeYear >= 18) ? 'совершеннолетняя' : 'несовершеннолетняя';
+        function getAge(birthday, value, b_Value, coef) {
+            if (birthday) {
+                return value - b_Value;
+            }
+            return value + coef - b_Value;
         }
 
-        let children = prompt('Сколько у Вас детей?');
+        let wordMonth = (userAgeMonth === 1) ? 'месяц' :
+            ((userAgeMonth < 5) && (userAgeMonth !== 0)) ? 'месяца' : 'месяцев';
+
+        const maleGender = confirm('Ваш пол мужской?');
+
+        const adHood = getAdHood(userAgeYear, maleGender);
+        function getAdHood(age, gender) {
+            const prefix = age >= 18 ? '' : 'не';
+            const ending = gender ? 'ий' : 'яя';
+            return `${prefix}совершеннолетн${ending}`
+        }
+
+        let children = prompt('Укажите, сколько у Вас детей');
         while (!isFinite(Number(children)) || !children) {
             children = prompt(`${wrongValue} Укажите, сколько у Вас детей ${onceAgain}`);
         }
 
-        let userChildren;
-        switch (children) {
-            case '0':
-                userChildren = 'нет детей';
-                break;
-            case '1':
-                userChildren = 'один ребенок';
-                break;
-            default:
-                userChildren = children + ' детей';
+        let userChildren = getUserChildren(children);
+        function getUserChildren(children) {
+            children = (!Number(children)) ? 'нет' : children;
+            const result = (children === '1') ? 'один ребенок' : `${children} детей`;
+            return result;
         }
-        
+
         alert(`${surname} ${ownName} ${patron}
         Вам ${userAgeYear} лет ${userAgeMonth} ${wordMonth}
         Вы ${adHood}
