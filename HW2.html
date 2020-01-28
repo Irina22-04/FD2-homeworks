@@ -23,7 +23,7 @@
         function askParams(phrase) {
             let param = prompt(`${phrase}`);
             while (!param) {
-                param = prompt(`${wrongValue} ${phrase} ${onceAgain}`)
+                param = prompt(`Вы ввели некорректное значение. ${phrase} еще раз`)
             }
             return param;
         }
@@ -43,11 +43,11 @@
         let userAgeYear = getAge(birthday, todayYear, birthdayYear, -1);
         let userAgeMonth = getAge(birthday, todayMonth, birthdayMonth, 12);
 
-        function getAge(birthday, value, b_Value, coef) {
+        function getAge(birthday, value, birthValue, coef) {
             if (birthday) {
-                return value - b_Value;
+                return value - birthValue;
             }
-            return value + coef - b_Value;
+            return value + coef - birthValue;
         }
 
         let wordMonth = (userAgeMonth === 1) ? 'месяц' :

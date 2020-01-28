@@ -13,7 +13,8 @@
 
         const solveEquation = (a, b, c) => {
             if (!a) {
-                return 'это линейное уравнение';
+                const value1 = - c / b;
+                return [value1];
             }
 
             const discriminant = Math.pow(b, 2) - 4 * a * c;
@@ -43,7 +44,7 @@
 
             return solveEquation(a, b, c);
         }
-        
+                
     </script>
 
 </body>
