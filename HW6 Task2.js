@@ -1,4 +1,4 @@
-let deepEqual = (a, b) => {
+const deepEqual = (a, b) => {
 
     if (Object.keys(a).length !== Object.keys(b).length) {
         return false;
