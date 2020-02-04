@@ -1,4 +1,4 @@
-function myBind(func, context, ...arg){
+function myBind(func, context, ...arg) {
     return function() {
         return func.apply(context, arg);
     }
