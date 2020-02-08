@@ -1,19 +1,19 @@
 function HashStorageFunc() {
-    this.hash = {};
+    this._hash = {};
     this.addValue = function (key, value) {
-        this.hash[key] = value;
+        this._hash[key] = value;
     };
     this.getValue = function (key) {
-        return this.hash[key];
+        return this._hash[key];
     };
     this.deleteValue = function (key) {
-        if (key in this.hash) {
-            return delete this.hash[key];
+        if (key in this._hash) {
+            return delete this._hash[key];
         }
         return false;
     };
     this.getKeys = function () {
-        return Object.keys(this.hash);
+        return Object.keys(this._hash);
     };
 }
 
