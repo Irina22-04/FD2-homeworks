@@ -19,9 +19,10 @@ function HashStorageFunc() {
 
 function ClassA() {
     HashStorageFunc.call(this);
+    let parentDeleteValue = this.deleteValue;
     this.deleteValue = function (key) {
-        if (key in this._hash) {
-            delete this._hash[key];
+        let res = parentDeleteValue.call(this, key);
+        if (res) {
             return 'значение удалено';
         }
         return 'такого значения нет';
@@ -30,7 +31,7 @@ function ClassA() {
 
 function ClassB() {
     HashStorageFunc.call(this);
-    this.getEntries = function() {
+    this.getEntries = function () {
         return Object.entries(this._hash);
     }
 }
