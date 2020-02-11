@@ -37,7 +37,7 @@ function ClassB() {
 }
 
 const drinkStorage = new ClassA();
-drinkStorage.addValue('морс', {'состав:': 'вода, варенье', 'алкоголь': false});
+drinkStorage.addValue('морс', {'состав:': 'вода, ягоды', 'алкоголь': false});
 console.log(drinkStorage.getKeys());
 console.log(drinkStorage.getValue('морс'));
 console.log(drinkStorage.deleteValue('компот'));
