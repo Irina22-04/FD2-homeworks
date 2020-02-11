@@ -19,13 +19,10 @@ function HashStorageFunc() {
 
 function ClassA() {
     HashStorageFunc.call(this);
-    let parentDeleteValue = this.deleteValue;
+    const parentDeleteValue = this.deleteValue;
     this.deleteValue = function (key) {
-        let res = parentDeleteValue.call(this, key);
-        if (res) {
-            return 'значение удалено';
-        }
-        return 'такого значения нет';
+        const result = parentDeleteValue.call(this, key);
+        return result ? 'значение удалено': 'такого значения нет';
     };
 }
 
