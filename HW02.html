@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+    <script>
+        let todayYear = 2020;
+        let todayMonth = 1;
+
+        const wrongValue = 'Вы ввели некорректное значение.';
+        const onceAgain = 'еще раз';
+
+        let surname = askParams('Введите Вашу Фамилию');
+        let ownName = askParams('Введите Ваше Имя');
+        let patron = askParams('Введите Ваше отчество');
+
+        function askParams(phrase) {
+            let param = prompt(`${phrase}`);
+            while (!param) {
+                param = prompt(`Вы ввели некорректное значение. ${phrase} еще раз`)
+            }
+            return param;
+        }
+
+        let birthdayYear = Number(prompt('Введите год Вашего рождения'));
+        while (!isFinite(birthdayYear) || !birthdayYear || birthdayYear < 1920) {
+            birthdayYear = Number(prompt(`${wrongValue} Введите год Вашего рождения ${onceAgain}`));
+        }
+
+        let birthdayMonth = Number(prompt('Введите месяц Вашего рождения'));
+        while (!isFinite(birthdayMonth) || !birthdayMonth || birthdayMonth > 12) {
+            birthdayMonth = Number(prompt(`${wrongValue} Введите месяц Вашего рождения ${onceAgain}`));
+        }
+
+        let birthday = todayMonth >= birthdayMonth;
+
+        let userAgeYear = getAge(birthday, todayYear, birthdayYear, -1);
+        let userAgeMonth = getAge(birthday, todayMonth, birthdayMonth, 12);
+
+        function getAge(birthday, value, birthValue, coef) {
+            if (birthday) {
+                return value - birthValue;
+            }
+            return value + coef - birthValue;
+        }
+
+        let wordMonth = (userAgeMonth === 1) ? 'месяц' :
+            ((userAgeMonth < 5) && (userAgeMonth !== 0)) ? 'месяца' : 'месяцев';
+
+        const maleGender = confirm('Ваш пол мужской?');
+
+        const adHood = getAdHood(userAgeYear, maleGender);
+        function getAdHood(age, gender) {
+            const prefix = age >= 18 ? '' : 'не';
+            const ending = gender ? 'ий' : 'яя';
+            return `${prefix}совершеннолетн${ending}`
+        }
+
+        let children = prompt('Укажите, сколько у Вас детей');
+        while (!isFinite(Number(children)) || !children) {
+            children = prompt(`${wrongValue} Укажите, сколько у Вас детей ${onceAgain}`);
+        }
+
+        let userChildren = getUserChildren(children);
+        function getUserChildren(children) {
+            children = (!Number(children)) ? 'нет' : children;
+            const result = (children === '1') ? 'один ребенок' : `${children} детей`;
+            return result;
+        }
+
+        alert(`${surname} ${ownName} ${patron}
+        Вам ${userAgeYear} лет ${userAgeMonth} ${wordMonth}
+        Вы ${adHood}
+        У Вас ${userChildren} 
+        `);
+    </script>
+
+
+</body>
+
+</html>
