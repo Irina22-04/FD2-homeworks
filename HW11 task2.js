@@ -36,10 +36,7 @@ class ClassA extends HashStorageFunc {
 }
 
 class ClassB extends HashStorageFunc {
-    constructor() {
-        super();
-    }
-
+    
     getEntries() {
         return Object.entries(this._hash);
     }
