@@ -36,7 +36,6 @@ class ClassA extends HashStorageFunc {
 }
 
 class ClassB extends HashStorageFunc {
-    
     getEntries() {
         return Object.entries(this._hash);
     }
@@ -46,27 +45,3 @@ class ClassB extends HashStorageFunc {
         return 'значение добавлено';
     }
 }
-
-const drinkStorage = new ClassA('напитки');
-drinkStorage.addValue('морс', {'состав:': 'вода, ягоды', 'алкоголь': false});
-console.log(drinkStorage.getKeys());
-console.log(drinkStorage.getValue('морс'));
-console.log(drinkStorage.deleteValue('компот'));
-console.log(drinkStorage.deleteValue('морс'));
-console.log(drinkStorage.getKeys());
-drinkStorage.addValue('компот', {'состав:': 'вода, фрукты', 'алкоголь': false});
-drinkStorage.addValue('каппучино', {'состав:': 'вода, кофе, сахар, молоко', 'алкоголь': false});
-console.log(drinkStorage.getKeys());
-console.log(drinkStorage.hashTitle);
-
-const drinkStorage2 = new ClassB();
-drinkStorage2.addValue('облепиховый чай', {'состав:': 'вода, черный чай, облепиха, апельсин', 'алкоголь': false});
-console.log(drinkStorage2.getKeys());
-console.log(drinkStorage2.getValue('облепиховый чай'));
-console.log(drinkStorage2.deleteValue('компот'));
-console.log(drinkStorage2.deleteValue('облепиховый чай'));
-console.log(drinkStorage2.getKeys());
-console.log(drinkStorage2.addValue('латте', {'состав:': 'вода, кофе, сахар, молоко', 'алкоголь': false}));
-console.log(drinkStorage2.addValue('чай каркаде', {'состав:': 'вода, каркаде', 'алкоголь': false}));
-console.log(drinkStorage2.getKeys());
-console.log(drinkStorage2.getEntries());
