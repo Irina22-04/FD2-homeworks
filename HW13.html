@@ -45,13 +45,20 @@
             left: 200px;
             top: 0;
             width: 50%;
-
         }
 
         .radioValue {
-            margin-right: 4%;
+            position: absolute;
+            left: 0;
             font-size: 15px;
             margin-top: 2px;
+            margin-left: 0;
+            top: 1.5px;
+        }
+        .radioLabel {
+            margin-right: 4%;
+            position: relative;
+            padding-left: 20px;
         }
 
         .check {
@@ -160,6 +167,7 @@
                         field.variants.forEach((item, index) => {
                             const elem = document.createElement('label');
                             elem.textContent = field.variants[index].text;
+                            elem.classList.add('radioLabel');
                             elem.htmlFor = `${field.name}-${item.value}`;
 
                             const radioElem = document.createElement('input');
