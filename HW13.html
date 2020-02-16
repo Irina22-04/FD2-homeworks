@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        form {
+            width: 100%;
+            margin-top: 60px;
+        }
+
+        .fieldName {
+            width: 20%;
+            font-size: 15px;
+            height: 20px;
+            line-height: 15px;
+        }
+
+        .userField {
+            width: 50%;
+            font-size: 18px;
+            height: 20px;
+            line-height: 18px;
+            position: absolute;
+            left: 200px;
+        }
+
+        .field {
+            width: 100%;
+            position: relative;
+            min-height: 30px;
+        }
+
+        .selectField {
+            position: absolute;
+            left: 200px;
+            height: 26px;
+            font-size: 15px;
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        .radioDiv {
+            position: absolute;
+            left: 200px;
+            top: 0;
+            width: 50%;
+
+        }
+
+        .radioValue {
+            margin-right: 4%;
+            font-size: 15px;
+            margin-top: 2px;
+        }
+
+        .check {
+            position: absolute;
+            left: 200px;
+            height: 25px;
+            margin: 0;
+            top: -7px;
+        }
+
+        .areaField {
+            position: absolute;
+            left: 200px;
+            min-width: 50%;
+            max-width: 50%;
+            max-height: 200px;
+        }
+
+        button {
+            margin-top: 30px;
+        }
+
+    </style>
+</head>
+
+<body>
+<form class="form1" action="http://fe.it-academy.by/TestForm.php">
+
+</form>
+
+<form class="form2" action="http://fe.it-academy.by/TestForm.php">
+
+</form>
+<script>
+    const formDef1 = [
+        {label: 'Название сайта:', kind: 'longtext', name: 'sitename'},
+        {label: 'URL сайта:', kind: 'longtext', name: 'siteurl'},
+        {label: 'Посетителей в сутки:', kind: 'number', name: 'visitors'},
+        {label: 'E-mail для связи:', kind: 'shorttext', name: 'email'},
+        {
+            label: 'Рубрика каталога:', kind: 'combo', name: 'division',
+            variants: [{text: 'здоровье', value: 1}, {text: 'домашний уют', value: 2},
+                {text: 'бытовая техника', value: 3}]
+        },
+        {
+            label: 'Размещение:', kind: 'radio', name: 'payment',
+            variants: [{text: 'бесплатное', value: 1}, {text: 'платное', value: 2}, {text: 'VIP', value: 3}]
+        },
+        {label: 'Разрешить отзывы:', kind: 'check', name: 'votes'},
+        {label: 'Описание сайта:', kind: 'memo', name: 'description'},
+        {label: 'Опубликовать', kind: 'submit'},
+    ];
+
+    const formDef2 = [
+        {label: 'Фамилия:', kind: 'longtext', name: 'lastname'},
+        {label: 'Имя:', kind: 'longtext', name: 'firstname'},
+        {label: 'Отчество:', kind: 'longtext', name: 'secondname'},
+        {label: 'Возраст:', kind: 'number', name: 'age'},
+        {label: 'Зарегистрироваться', kind: 'submit'},
+    ];
+
+    const form1 = document.body.querySelector('.form1');
+    createForm(form1, formDef1);
+
+    const form2 = document.body.querySelector('.form2');
+    createForm(form2, formDef2);
+
+    function createForm(formName, fields) {
+        fields.forEach(field => {
+            const fieldDiv = document.createElement('div');
+            fieldDiv.classList.add('field');
+            if (field.kind !== 'submit') {
+                const formLabel = document.createElement('label');
+                formLabel.textContent = field.label;
+                formLabel.classList.add('fieldName');
+                fieldDiv.appendChild(formLabel);
+            }
+
+            const formField = createField(field);
+
+            fieldDiv.appendChild(formField);
+            formName.appendChild(fieldDiv);
+
+            function createField(field) {
+                let result;
+                switch (field.kind) {
+                    case 'longtext':
+                    case 'shorttext':
+                        result = document.createElement('input');
+                        result.type = 'text';
+                        result.name = field.name;
+                        result.id = field.name;
+                        result.classList.add('userField');
+                        break;
+                    case 'number':
+                        result = document.createElement('input');
+                        result.type = 'number';
+                        result.name = field.name;
+                        result.id = field.id;
+                        result.classList.add('userField');
+                        break;
+                    case 'radio':
+                        result = document.createElement('div');
+                        result.classList.add('radioDiv');
+                        field.variants.forEach((item, index) => {
+                            const elem = document.createElement('label');
+                            elem.textContent = field.variants[index].text;
+                            elem.for = `${elem.name}-${elem.value}`;
+
+                            const radioElem = document.createElement('input');
+                            radioElem.classList.add('radioValue');
+                            radioElem.type = 'radio';
+                            radioElem.value = field.variants[index].value;
+                            radioElem.name = field.name;
+                            radioElem.id = `${elem.name}-${elem.value}`;
+                            elem.appendChild(radioElem);
+
+                            result.appendChild(elem);
+                        });
+                        break;
+                    case 'combo':
+                        result = document.createElement('select');
+                        result.classList.add('selectField');
+                        result.id = field.name;
+                        result.name = field.name;
+                        field.variants.forEach((item, index) => {
+                            let elem = document.createElement('option');
+                            elem.value = field.variants[index].value;
+                            elem.textContent = field.variants[index].text;
+                            result.appendChild(elem);
+                        });
+                        break;
+                    case 'memo':
+                        result = document.createElement('textarea');
+                        result.name = field.name;
+                        result.id = field.id;
+                        result.classList.add('areaField');
+                        break;
+                    case 'check':
+                        result = document.createElement('input');
+                        result.type = 'checkbox';
+                        result.name = field.name;
+                        result.id = field.id;
+                        result.classList.add('check');
+                        break;
+                    case 'submit':
+                        result = document.createElement('button');
+                        result.name = 'singlebutton';
+                        result.id = 'singlebutton';
+                        result.textContent = field.label;
+                }
+                return result;
+            }
+        })
+    }
+</script>
+</body>
+</html>
