@@ -9,43 +9,43 @@
 
 <body>
 
-    <script>
+<script>
 
-        const solveEquation = (a, b, c) => {
-            if (!a) {
-                const value1 = - c / b;
-                return [value1];
-            }
-
-            const discriminant = Math.pow(b, 2) - 4 * a * c;
-
-            if (discriminant > 0) {
-                const value1 = (-b + Math.sqrt(discriminant)) / 2 * a;
-                const value2 = (-b - Math.sqrt(discriminant)) / 2 * a;
-                return [value1, value2];
-            }
-
-            if (discriminant === 0) {
-                const value1 = -b / 2 * a;
-                return [value1];
-            }
-
-            return [];
+    const solveEquation = (a, b, c) => {
+        if (!a) {
+            const value1 = - c / b;
+            return [value1];
         }
 
-        const ask = (coefName) => {
-            return Number(prompt(`Введите значение коэффициента \'${coefName}\'`))
+        const discriminant = Math.pow(b, 2) - 4 * a * c;
+
+        if (discriminant > 0) {
+            const value1 = (-b + Math.sqrt(discriminant)) / 2 * a;
+            const value2 = (-b - Math.sqrt(discriminant)) / 2 * a;
+            return [value1, value2];
         }
 
-        const getParam = () => {
-            const a = ask('a');
-            const b = ask('b');
-            const c = ask('c');
-
-            return solveEquation(a, b, c);
+        if (discriminant === 0) {
+            const value1 = -b / 2 * a;
+            return [value1];
         }
 
-    </script>
+        return [];
+    };
+
+    const ask = (coefName) => {
+        return Number(prompt(`Введите значение коэффициента \'${coefName}\'`))
+    };
+
+    const getParam = () => {
+        const a = ask('a');
+        const b = ask('b');
+        const c = ask('c');
+
+        return solveEquation(a, b, c);
+    };
+
+</script>
 
 </body>
 
