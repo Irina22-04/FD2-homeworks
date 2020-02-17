@@ -10,14 +10,14 @@
             margin-top: 60px;
         }
 
-        .fieldName {
+        .field-name {
             width: 20%;
             font-size: 15px;
             height: 20px;
             line-height: 15px;
         }
 
-        .userField {
+        .user-field {
             width: 50%;
             font-size: 18px;
             height: 20px;
@@ -32,7 +32,7 @@
             min-height: 30px;
         }
 
-        .selectField {
+        .select-field {
             position: absolute;
             left: 200px;
             height: 26px;
@@ -40,14 +40,14 @@
             font-family: "Times New Roman", Times, serif;
         }
 
-        .radioDiv {
+        .radio-div {
             position: absolute;
             left: 200px;
             top: 0;
             width: 50%;
         }
 
-        .radioValue {
+        .radio-value {
             position: absolute;
             left: 0;
             font-size: 15px;
@@ -56,7 +56,7 @@
             top: 1.5px;
         }
         
-        .radioLabel {
+        .radio-label {
             margin-right: 4%;
             position: relative;
             padding-left: 20px;
@@ -70,7 +70,7 @@
             top: -7px;
         }
 
-        .areaField {
+        .area-field {
             position: absolute;
             left: 200px;
             min-width: 50%;
@@ -135,7 +135,7 @@
                 const formLabel = document.createElement('label');
                 formLabel.textContent = field.label;
                 formLabel.htmlFor = field.name;
-                formLabel.classList.add('fieldName');
+                formLabel.classList.add('field-name');
                 fieldDiv.appendChild(formLabel);
             }
 
@@ -153,26 +153,26 @@
                         result.type = 'text';
                         result.name = field.name;
                         result.id = field.name;
-                        result.classList.add('userField');
+                        result.classList.add('user-field');
                         break;
                     case 'number':
                         result = document.createElement('input');
                         result.type = 'number';
                         result.name = field.name;
                         result.id = field.id;
-                        result.classList.add('userField');
+                        result.classList.add('user-field');
                         break;
                     case 'radio':
                         result = document.createElement('div');
-                        result.classList.add('radioDiv');
+                        result.classList.add('radio-div');
                         field.variants.forEach((item, index) => {
                             const elem = document.createElement('label');
                             elem.textContent = field.variants[index].text;
-                            elem.classList.add('radioLabel');
+                            elem.classList.add('radio-label');
                             elem.htmlFor = `${field.name}-${item.value}`;
 
                             const radioElem = document.createElement('input');
-                            radioElem.classList.add('radioValue');
+                            radioElem.classList.add('radio-value');
                             radioElem.type = 'radio';
                             radioElem.value = field.variants[index].value;
                             radioElem.name = field.name;
@@ -184,7 +184,7 @@
                         break;
                     case 'combo':
                         result = document.createElement('select');
-                        result.classList.add('selectField');
+                        result.classList.add('select-field');
                         result.id = field.name;
                         result.name = field.name;
                         field.variants.forEach((item, index) => {
@@ -198,7 +198,7 @@
                         result = document.createElement('textarea');
                         result.name = field.name;
                         result.id = field.id;
-                        result.classList.add('areaField');
+                        result.classList.add('area-field');
                         break;
                     case 'check':
                         result = document.createElement('input');
