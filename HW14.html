@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        form {
+            width: 100%;
+            margin-top: 60px;
+        }
+
+        .field-name {
+            width: 20%;
+            font-size: 15px;
+            height: 20px;
+            line-height: 15px;
+        }
+
+        .user-field {
+            width: 60%;
+            font-size: 18px;
+            height: 20px;
+            line-height: 18px;
+            position: absolute;
+            left: 200px;
+        }
+
+        .field {
+            width: 70%;
+            position: relative;
+            min-height: 30px;
+        }
+
+        .select-field {
+            position: absolute;
+            left: 200px;
+            height: 26px;
+            font-size: 15px;
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        .radio-div {
+            position: absolute;
+            left: 200px;
+            top: 0;
+            width: 50%;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .radio-value {
+            position: absolute;
+            left: 0;
+            font-size: 15px;
+            margin-top: 2px;
+            margin-left: 0;
+            top: 1.5px;
+        }
+
+        .radio-label {
+            margin-right: 4%;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .check {
+            position: absolute;
+            left: 200px;
+            height: 25px;
+            margin: 0;
+            top: -7px;
+        }
+
+        .area-field {
+            position: absolute;
+            left: 200px;
+            width: 50%;
+            max-width: 50%;
+            height: 50px;
+        }
+
+        button {
+            margin-top: 30px;
+        }
+
+        .err-value {
+            color: red;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<form class="form1" action="http://fe.it-academy.by/TestForm.php">
+</form>
+
+<form class="form2" action="http://fe.it-academy.by/TestForm.php">
+</form>
+
+<script>
+    const formDef1 = [
+        {label: 'Название сайта:', kind: 'longtext', name: 'sitename'},
+        {label: 'URL сайта:', kind: 'longtext', name: 'siteurl'},
+        {label: 'Посетителей в сутки:', kind: 'number', name: 'visitors'},
+        {label: 'E-mail для связи:', kind: 'shorttext', name: 'email'},
+        {
+            label: 'Рубрика каталога:', kind: 'combo', name: 'division',
+            variants: [{text: 'здоровье', value: 1}, {text: 'домашний уют', value: 2},
+                {text: 'бытовая техника', value: 3}]
+        },
+        {
+            label: 'Размещение:', kind: 'radio', name: 'payment',
+            variants: [{text: 'бесплатное', value: 1}, {text: 'платное', value: 2}, {text: 'VIP', value: 3}]
+        },
+        {label: 'Разрешить отзывы:', kind: 'check', name: 'votes'},
+        {label: 'Описание сайта:', kind: 'memo', name: 'description'},
+        {label: 'Опубликовать', kind: 'submit'},
+    ];
+
+    const formDef2 = [
+        {label: 'Фамилия:', kind: 'longtext', name: 'lastname'},
+        {label: 'Имя:', kind: 'longtext', name: 'firstname'},
+        {label: 'Отчество:', kind: 'longtext', name: 'secondname'},
+        {label: 'Возраст:', kind: 'number', name: 'age'},
+        {label: 'Зарегистрироваться', kind: 'submit'},
+    ];
+
+    const form1 = document.body.querySelector('.form1');
+    createForm(form1, formDef1);
+
+    const form2 = document.body.querySelector('.form2');
+    createForm(form2, formDef2);
+
+    function createForm(formName, fields) {
+        fields.forEach(field => {
+            const fieldDiv = document.createElement('div');
+            fieldDiv.classList.add('field');
+            if (field.kind !== 'submit') {
+                const formLabel = document.createElement('label');
+                formLabel.textContent = field.label;
+                formLabel.htmlFor = field.name;
+                formLabel.classList.add('field-name');
+                fieldDiv.appendChild(formLabel);
+            }
+
+            const formField = createField(field);
+
+            fieldDiv.appendChild(formField);
+            formName.appendChild(fieldDiv);
+
+            formName.addEventListener("submit", event => checkForm(event));
+
+            function createField(field) {
+                let result;
+                switch (field.kind) {
+                    case 'longtext':
+                    case 'shorttext':
+                        result = document.createElement('input');
+                        noteName(result, field);
+                        result.classList.add('user-field');
+                        break;
+                    case 'number':
+                        result = document.createElement('input');
+                        result.type = 'number';
+                        noteName(result, field);
+                        result.classList.add('user-field');
+                        result.addEventListener("blur", event => checkNumberField(event));
+                        break;
+                    case 'radio':
+                        result = document.createElement('fieldset');
+                        result.classList.add('radio-div');
+                        field.variants.forEach((item, index) => {
+                            const elem = document.createElement('label');
+                            elem.textContent = item.text;
+                            elem.classList.add('radio-label');
+                            elem.htmlFor = `${field.name}-${item.value}`;
+
+                            const radioElem = document.createElement('input');
+                            radioElem.classList.add('radio-value');
+                            radioElem.type = 'radio';
+                            radioElem.value = item.value;
+                            radioElem.name = field.name;
+                            radioElem.id = `${field.name}-${item.value}`;
+                            elem.appendChild(radioElem);
+
+                            result.appendChild(elem);
+                        });
+                        break;
+                    case 'combo':
+                        result = document.createElement('select');
+                        result.classList.add('select-field');
+                        noteName(result, field);
+                        field.variants.forEach((item, index) => {
+                            let elem = document.createElement('option');
+                            elem.value = field.variants[index].value;
+                            elem.textContent = field.variants[index].text;
+                            result.appendChild(elem);
+                        });
+                        break;
+                    case 'memo':
+                        result = document.createElement('textarea');
+                        noteName(result, field);
+                        result.classList.add('area-field');
+                        break;
+                    case 'check':
+                        result = document.createElement('input');
+                        result.type = 'checkbox';
+                        noteName(result, field);
+                        result.classList.add('check');
+                        break;
+                    case 'submit':
+                        result = document.createElement('button');
+                        result.type = 'submit';
+                        result.textContent = field.label;
+                }
+
+                function noteName(elem, key) {
+                    elem.name = key.name;
+                    elem.id = key.name;
+                    elem.addEventListener("blur", event => checkTextField(event));
+                }
+
+                return result;
+            }
+
+            if (checkField(formField)) {
+                const errElem = document.createElement('div');
+                errElem.classList.add('err-value');
+                fieldDiv.appendChild(errElem);
+            }
+
+            function checkField(field) {
+                return !(field.type === 'submit' || field.type === 'checkbox');
+            }
+
+            function checkTextField(event) {
+                const elem = event.target.nextElementSibling;
+                if (!event.target.value) {
+                    elem.textContent = 'Поле заполнено неверно';
+                } else if (elem.textContent) {
+                    elem.textContent = '';
+                }
+            }
+
+            function checkNumberField(event) {
+                const elem = event.target.nextElementSibling;
+                if (checkNumber(event.target.value)) {
+                    elem.textContent = 'Поле заполнено неверно';
+                } else if (elem.textContent) {
+                    elem.textContent = '';
+                }
+            }
+
+            const checkNumber = (value) => (parseInt(value) !== Number(value)) || Number(value < 0);
+
+            function checkForm(event) {
+
+                const form = event.target;
+                let hasErrors = false;
+                const elements = Array.from(form.elements);
+                elements.forEach(item => {
+                    if ((item.nodeName === 'INPUT') && (item.type === 'text') && (!item.value)) {
+                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
+                        hasErrors = true;
+                    }
+                    else if ((item.nodeName === 'INPUT') && (item.type === 'number') && (checkNumber(item.value))) {
+                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
+                        hasErrors = true;
+                    } else if (((item.nodeName === 'TEXTAREA') && (!item.value))) {
+                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
+                        hasErrors = true;
+                    }
+                    else if ((item.nodeName === 'FIELDSET') && (!checkRadio(item))) {
+                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
+                        hasErrors = true;
+                    }
+                });
+
+                if (hasErrors) event.preventDefault();
+            }
+
+            function checkRadio(element) {
+                const checkedElements = element.querySelectorAll('input[type="radio"]:checked');
+                console.log(checkedElements.length)
+                return (checkedElements.length > 0);
+            }
+
+        })
+    }
+</script>
+</body>
+</html>
