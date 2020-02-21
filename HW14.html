@@ -138,96 +138,23 @@
     createForm(form2, formDef2);
 
     function createForm(formName, fields) {
+        const hasErrors = {};
         fields.forEach(field => {
             const fieldDiv = document.createElement('div');
             fieldDiv.classList.add('field');
             if (field.kind !== 'submit') {
                 const formLabel = document.createElement('label');
+                fieldDiv.classList.add(field.name);
                 formLabel.textContent = field.label;
                 formLabel.htmlFor = field.name;
+                hasErrors[field.name] = '';
                 formLabel.classList.add('field-name');
                 fieldDiv.appendChild(formLabel);
             }
 
-            const formField = createField(field);
-
+            const formField = createField(field, hasErrors);
             fieldDiv.appendChild(formField);
             formName.appendChild(fieldDiv);
-
-            formName.addEventListener("submit", event => checkForm(event));
-
-            function createField(field) {
-                let result;
-                switch (field.kind) {
-                    case 'longtext':
-                    case 'shorttext':
-                        result = document.createElement('input');
-                        noteName(result, field);
-                        result.classList.add('user-field');
-                        break;
-                    case 'number':
-                        result = document.createElement('input');
-                        result.type = 'number';
-                        noteName(result, field);
-                        result.classList.add('user-field');
-                        result.addEventListener("blur", event => checkNumberField(event));
-                        break;
-                    case 'radio':
-                        result = document.createElement('fieldset');
-                        result.classList.add('radio-div');
-                        field.variants.forEach((item, index) => {
-                            const elem = document.createElement('label');
-                            elem.textContent = item.text;
-                            elem.classList.add('radio-label');
-                            elem.htmlFor = `${field.name}-${item.value}`;
-
-                            const radioElem = document.createElement('input');
-                            radioElem.classList.add('radio-value');
-                            radioElem.type = 'radio';
-                            radioElem.value = item.value;
-                            radioElem.name = field.name;
-                            radioElem.id = `${field.name}-${item.value}`;
-                            elem.appendChild(radioElem);
-
-                            result.appendChild(elem);
-                        });
-                        break;
-                    case 'combo':
-                        result = document.createElement('select');
-                        result.classList.add('select-field');
-                        noteName(result, field);
-                        field.variants.forEach((item, index) => {
-                            let elem = document.createElement('option');
-                            elem.value = field.variants[index].value;
-                            elem.textContent = field.variants[index].text;
-                            result.appendChild(elem);
-                        });
-                        break;
-                    case 'memo':
-                        result = document.createElement('textarea');
-                        noteName(result, field);
-                        result.classList.add('area-field');
-                        break;
-                    case 'check':
-                        result = document.createElement('input');
-                        result.type = 'checkbox';
-                        noteName(result, field);
-                        result.classList.add('check');
-                        break;
-                    case 'submit':
-                        result = document.createElement('button');
-                        result.type = 'submit';
-                        result.textContent = field.label;
-                }
-
-                function noteName(elem, key) {
-                    elem.name = key.name;
-                    elem.id = key.name;
-                    elem.addEventListener("blur", event => checkTextField(event));
-                }
-
-                return result;
-            }
 
             if (checkField(formField)) {
                 const errElem = document.createElement('div');
@@ -235,63 +162,141 @@
                 fieldDiv.appendChild(errElem);
             }
 
-            function checkField(field) {
-                return !(field.type === 'submit' || field.type === 'checkbox');
-            }
-
-            function checkTextField(event) {
-                const elem = event.target.nextElementSibling;
-                if (!event.target.value) {
-                    elem.textContent = 'Поле заполнено неверно';
-                } else if (elem.textContent) {
-                    elem.textContent = '';
-                }
-            }
-
-            function checkNumberField(event) {
-                const elem = event.target.nextElementSibling;
-                if (checkNumber(event.target.value)) {
-                    elem.textContent = 'Поле заполнено неверно';
-                } else if (elem.textContent) {
-                    elem.textContent = '';
-                }
-            }
-
-            const checkNumber = (value) => (parseInt(value) !== Number(value)) || Number(value < 0);
-
-            function checkForm(event) {
-
-                const form = event.target;
-                let hasErrors = false;
-                const elements = Array.from(form.elements);
-                elements.forEach(item => {
-                    if ((item.nodeName === 'INPUT') && (item.type === 'text') && (!item.value)) {
-                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
-                        hasErrors = true;
-                    }
-                    else if ((item.nodeName === 'INPUT') && (item.type === 'number') && (checkNumber(item.value))) {
-                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
-                        hasErrors = true;
-                    } else if (((item.nodeName === 'TEXTAREA') && (!item.value))) {
-                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
-                        hasErrors = true;
-                    }
-                    else if ((item.nodeName === 'FIELDSET') && (!checkRadio(item))) {
-                        item.nextElementSibling.textContent = 'Поле заполнено неверно';
-                        hasErrors = true;
-                    }
-                });
-
-                if (hasErrors) event.preventDefault();
-            }
-
-            function checkRadio(element) {
-                const checkedElements = element.querySelectorAll('input[type="radio"]:checked');
-                return (checkedElements.length > 0);
-            }
-
+            formName.addEventListener("submit", event => checkForm(event, hasErrors));
         })
     }
+
+    function createField(field, errObj) {
+        let result;
+        switch (field.kind) {
+            case 'longtext':
+            case 'shorttext':
+                result = document.createElement('input');
+                noteName(result, field);
+                result.classList.add('user-field');
+                result.addEventListener("blur", event => validateTextField(event, errObj));
+                break;
+            case 'number':
+                result = document.createElement('input');
+                result.type = 'number';
+                noteName(result, field);
+                result.classList.add('user-field');
+                result.addEventListener("blur", event => validateNumberField(event, errObj));
+                break;
+            case 'radio':
+                result = document.createElement('fieldset');
+                result.classList.add('radio-div');
+                field.variants.forEach((item, index) => {
+                    const elem = document.createElement('label');
+                    elem.textContent = item.text;
+                    elem.classList.add('radio-label');
+                    elem.htmlFor = `${field.name}-${item.value}`;
+
+                    const radioElem = document.createElement('input');
+                    radioElem.classList.add('radio-value');
+                    radioElem.type = 'radio';
+                    radioElem.value = item.value;
+                    radioElem.name = field.name;
+                    radioElem.id = `${field.name}-${item.value}`;
+                    radioElem.addEventListener("blur", event => validateRadioField(event, errObj));
+                    elem.appendChild(radioElem);
+
+                    result.appendChild(elem);
+                });
+                break;
+            case 'combo':
+                result = document.createElement('select');
+                result.classList.add('select-field');
+                noteName(result, field);
+                field.variants.forEach((item, index) => {
+                    let elem = document.createElement('option');
+                    elem.value = field.variants[index].value;
+                    elem.textContent = field.variants[index].text;
+                    result.appendChild(elem);
+                });
+                break;
+            case 'memo':
+                result = document.createElement('textarea');
+                noteName(result, field);
+                result.classList.add('area-field');
+                result.addEventListener("blur", event => validateTextField(event, errObj));
+                break;
+            case 'check':
+                result = document.createElement('input');
+                result.type = 'checkbox';
+                noteName(result, field);
+                result.classList.add('check');
+                break;
+            case 'submit':
+                result = document.createElement('button');
+                result.type = 'submit';
+                result.textContent = field.label;
+        }
+        return result;
+    }
+
+    function noteName(elem, key) {
+        elem.name = key.name;
+        elem.id = key.name;
+    }
+
+    function checkField(field) {
+        return !(field.type === 'submit' || field.type === 'checkbox');
+    }
+
+    const checkText = text => !!text;
+
+    function validateTextField(event, errObj) {
+        const name = event.target.name;
+        const value = event.target.value;
+        const result = checkText(value);
+        errObj[name] = result ? '' : 'Поле заполнено неверно';
+        setErrValue(name, errObj);
+    }
+
+    const checkNumber = value => (!(parseInt(value) !== Number(value)) || Number(value < 0));
+
+    function validateNumberField(event, errObj) {
+        const name = event.target.name;
+        const value = event.target.value;
+        const result = checkNumber(value);
+        errObj[name] = result ? '' : 'Поле заполнено неверно';
+        setErrValue(name, errObj);
+    }
+
+    function validateRadioField(event, errObj) {
+        const name = event.target.name;
+        const element = event.target.parentElement.parentElement;
+        const checkedElements = element.querySelectorAll('input[type="radio"]:checked');
+        const result = checkedElements.length > 0;
+        errObj[name] = result ? '' : 'Поле заполнено неверно';
+        setErrValue(name, errObj);
+    }
+
+    function setErrValue(name, errObj) {
+        const divErr = document.querySelector(`.${name} > .err-value`);
+        divErr.textContent = errObj[name];
+    }
+
+    function checkForm(event, errObj) {
+        const form = event.target;
+
+        const elements = Array.from(form.elements);
+        elements.forEach(item => {
+            if ((item.nodeName === 'INPUT') || (item.nodeName === 'TEXTAREA')) {
+                item.focus();
+                item.blur();
+            }
+        });
+
+        const firstError = Object.keys(errObj).find(item => !!errObj[item]);
+        if (firstError) {
+            event.preventDefault();
+            const result = document.querySelector(`.${firstError} input`) || document.querySelector(`${firstErrors} textarea`);
+            result.focus();
+        }
+    }
+
 </script>
 </body>
 </html>
