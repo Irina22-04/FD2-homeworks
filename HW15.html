@@ -67,18 +67,18 @@
         elem.addEventListener('mouseout', event => event.target.classList.remove('grab'));
         elem.addEventListener('mousedown', down);
     });
-    
+
     function down(event) {
         const elem = event.target;
 
         const coords = elem.getBoundingClientRect();
         const shiftX = event.clientX - coords.left;
         const shiftY = event.clientY - coords.top;
-        
+
         elem.classList.add('positioned');
         elem.classList.add('scaleble');
-        document.addEventListener('mousemove', move);
-        document.addEventListener('mouseup', up);
+        container.addEventListener('mousemove', move);
+        container.addEventListener('mouseup', up);
 
         function move(event) {
             elem.style.left = event.clientX - shiftX + 'px';
@@ -86,8 +86,7 @@
         }
 
         function up() {
-            document.removeEventListener('mousemove', move);
-            document.removeEventListener('mouseup', up);
+            container.removeEventListener('mousemove', move);
             elem.classList.remove('scaleble');
         }
 
