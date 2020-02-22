@@ -109,15 +109,11 @@
         {label: 'URL сайта:', kind: 'longtext', name: 'siteurl'},
         {label: 'Посетителей в сутки:', kind: 'number', name: 'visitors'},
         {label: 'E-mail для связи:', kind: 'shorttext', name: 'email'},
-        {
-            label: 'Рубрика каталога:', kind: 'combo', name: 'division',
+        {label: 'Рубрика каталога:', kind: 'combo', name: 'division',
             variants: [{text: 'здоровье', value: 1}, {text: 'домашний уют', value: 2},
-                {text: 'бытовая техника', value: 3}]
-        },
-        {
-            label: 'Размещение:', kind: 'radio', name: 'payment',
-            variants: [{text: 'бесплатное', value: 1}, {text: 'платное', value: 2}, {text: 'VIP', value: 3}]
-        },
+                {text: 'бытовая техника', value: 3}]},
+        {label: 'Размещение:', kind: 'radio', name: 'payment',
+            variants: [{text: 'бесплатное', value: 1}, {text: 'платное', value: 2}, {text: 'VIP', value: 3}]},
         {label: 'Разрешить отзывы:', kind: 'check', name: 'votes'},
         {label: 'Описание сайта:', kind: 'memo', name: 'description'},
         {label: 'Опубликовать', kind: 'submit'},
@@ -172,20 +168,17 @@
             case 'longtext':
             case 'shorttext':
                 result = document.createElement('input');
-                noteName(result, field);
-                result.classList.add('user-field');
-                result.addEventListener("blur", event => validateTextField(event, errObj));
+                noteName(result, field, 'user-field', 'text');
+                result.addEventListener("blur", event => validateField(event, errObj));
                 break;
             case 'number':
                 result = document.createElement('input');
-                result.type = 'number';
-                noteName(result, field);
-                result.classList.add('user-field');
-                result.addEventListener("blur", event => validateNumberField(event, errObj));
+                noteName(result, field, 'user-field', 'number');
+                result.addEventListener("blur", event => validateField(event, errObj));
                 break;
             case 'radio':
                 result = document.createElement('fieldset');
-                result.classList.add('radio-div');
+                result.classList.add('radio-div', `${field.name}`);
                 field.variants.forEach((item, index) => {
                     const elem = document.createElement('label');
                     elem.textContent = item.text;
@@ -198,7 +191,7 @@
                     radioElem.value = item.value;
                     radioElem.name = field.name;
                     radioElem.id = `${field.name}-${item.value}`;
-                    radioElem.addEventListener("blur", event => validateRadioField(event, errObj));
+                    radioElem.addEventListener("blur", event => validateField(event, errObj));
                     elem.appendChild(radioElem);
 
                     result.appendChild(elem);
@@ -206,8 +199,7 @@
                 break;
             case 'combo':
                 result = document.createElement('select');
-                result.classList.add('select-field');
-                noteName(result, field);
+                noteName(result, field, 'select-field');
                 field.variants.forEach((item, index) => {
                     let elem = document.createElement('option');
                     elem.value = field.variants[index].value;
@@ -217,15 +209,12 @@
                 break;
             case 'memo':
                 result = document.createElement('textarea');
-                noteName(result, field);
-                result.classList.add('area-field');
-                result.addEventListener("blur", event => validateTextField(event, errObj));
+                noteName(result, field, 'area-field');
+                result.addEventListener("blur", event => validateField(event, errObj));
                 break;
             case 'check':
                 result = document.createElement('input');
-                result.type = 'checkbox';
-                noteName(result, field);
-                result.classList.add('check');
+                noteName(result, field, 'check', 'checkbox');
                 break;
             case 'submit':
                 result = document.createElement('button');
@@ -235,9 +224,13 @@
         return result;
     }
 
-    function noteName(elem, key) {
+    function noteName(elem, key, className, type) {
         elem.name = key.name;
         elem.id = key.name;
+        elem.classList.add(`${className}`);
+        if (type) {
+            elem.type = type;
+        }
     }
 
     function checkField(field) {
@@ -245,30 +238,23 @@
     }
 
     const checkText = text => !!text;
-
-    function validateTextField(event, errObj) {
-        const name = event.target.name;
-        const value = event.target.value;
-        const result = checkText(value);
-        errObj[name] = result ? '' : 'Поле заполнено неверно';
-        setErrValue(name, errObj);
-    }
-
     const checkNumber = value => (!(parseInt(value) !== Number(value)) || Number(value < 0));
 
-    function validateNumberField(event, errObj) {
+    function validateField(event, errObj) {
         const name = event.target.name;
-        const value = event.target.value;
-        const result = checkNumber(value);
-        errObj[name] = result ? '' : 'Поле заполнено неверно';
-        setErrValue(name, errObj);
-    }
-
-    function validateRadioField(event, errObj) {
-        const name = event.target.name;
-        const element = event.target.parentElement.parentElement;
-        const checkedElements = element.querySelectorAll('input[type="radio"]:checked');
-        const result = checkedElements.length > 0;
+        let result;
+        if (event.target.type === 'number') {
+            const value = event.target.value;
+            result = checkNumber(value);
+        } else if (event.target.type === 'radio') {
+            const name = event.target.name;
+            const element = document.querySelector(`.${name} fieldset`)
+            const checkedElements = element.querySelectorAll('input[type="radio"]:checked');
+            result = checkedElements.length > 0;
+        } else {
+            const value = event.target.value;
+            result = checkText(value);
+        }
         errObj[name] = result ? '' : 'Поле заполнено неверно';
         setErrValue(name, errObj);
     }
@@ -292,7 +278,7 @@
         const firstError = Object.keys(errObj).find(item => !!errObj[item]);
         if (firstError) {
             event.preventDefault();
-            const result = document.querySelector(`.${firstError} input`) || document.querySelector(`${firstErrors} textarea`);
+            const result = document.querySelector(`.${firstError} input, .${firstError} textarea`);
             result.focus();
         }
     }
