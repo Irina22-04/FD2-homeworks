@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        text {
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<svg id="svg" height="300" width="300"/>
+
+<script>
+    const svg = document.getElementById("svg");
+    const svgNS = "http://www.w3.org/2000/svg";
+
+    const widthArea = parseFloat(svg.getAttribute("width"));
+    const heightArea = parseFloat(svg.getAttribute("height"));
+    const radClock = widthArea > heightArea ? heightArea / 2 : widthArea / 2;
+    const clockCenterWidth = widthArea / 2;
+    const clockCenterHeight = heightArea / 2;
+
+    const circle = document.createElementNS(svgNS, "circle");
+    createCircle(circle, clockCenterWidth, clockCenterHeight, radClock, "yellow");
+
+    function createCircle(elem, x, y, r, color) {
+        elem.setAttribute("cx", x);
+        elem.setAttribute("cy", y);
+        elem.setAttribute("r", r);
+        elem.setAttribute("fill", color);
+        svg.appendChild(elem);
+    }
+
+    const radNumb = radClock * 0.8;
+    const radGreen = radClock * 0.15;
+
+    for (let i = 1; i <= 12; i++) {
+        const angleNumb = (i * 30) / 180 * Math.PI;
+        const y1 = clockCenterHeight - radNumb * Math.cos(angleNumb);
+        const x1 = clockCenterWidth + radNumb * Math.sin(angleNumb);
+
+        const greenCircle = document.createElementNS(svgNS, "circle");
+        createCircle(greenCircle, x1, y1, radGreen, "green");
+
+        const text = document.createElementNS(svgNS, "text");
+        createText(text, x1, y1);
+        text.innerHTML = i;
+    }
+
+    function createText(elem, x, y) {
+        elem.setAttribute("x", x);
+        elem.setAttribute("y", y);
+        elem.setAttribute("text-anchor", "middle");
+        elem.setAttribute("dominant-baseline", "middle");
+        svg.appendChild(elem);
+    }
+
+    const digClock = document.createElementNS(svgNS, "text");
+    createText(digClock, clockCenterWidth, clockCenterHeight / 1.5);
+
+    const minArrow = document.createElementNS(svgNS, "line");
+    const minArrowLength = radClock * 0.5;
+    createLine(minArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - minArrowLength);
+    minArrow.setAttribute("stroke-width", "3");
+
+    const secArrow = document.createElementNS(svgNS, "line");
+    const secArrowLength = radClock * 0.7;
+    createLine(secArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - secArrowLength);
+    secArrow.setAttribute("stroke-width", "2");
+
+    const hourArrow = document.createElementNS(svgNS, "line");
+    const hourArrowLength = radClock * 0.3;
+    createLine(hourArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - hourArrowLength);
+    hourArrow.setAttribute("stroke-width", "4");
+
+    function createLine(elem, x, y, x1, y1,) {
+        elem.setAttribute("x1", x);
+        elem.setAttribute("y1", y);
+        elem.setAttribute("x2", x1);
+        elem.setAttribute("y2", y1);
+        elem.setAttribute("stroke", "black");
+        svg.appendChild(elem);
+    }
+
+    setInterval(updateTime, 1000);
+
+    function updateTime() {
+        const currTime = new Date();
+        const timeStr = formatTime(currTime);
+        digClock.innerHTML = timeStr;
+    }
+
+    function formatTime(time) {
+        const hours = time.getHours();
+        const minutes = time.getMinutes();
+        rotateHourArrow (hours, minutes);
+        rotateMinArrow (minutes, minArrow, minArrowLength);
+        const seconds = time.getSeconds();
+        rotateMinArrow (seconds, secArrow, secArrowLength);
+        return `${str0l(hours, 2)}:${str0l(minutes, 2)}:${str0l(seconds, 2)}`;
+    }
+
+    function rotateHourArrow (hours, minutes) {
+        const angle = (hours * 30 + minutes * 0.5 )/ 180 * Math.PI;
+        hourArrow.setAttribute("x2", clockCenterWidth + hourArrowLength * Math.sin(angle));
+        hourArrow.setAttribute("y2", clockCenterHeight - hourArrowLength * Math.cos(angle));
+    }
+
+    function rotateMinArrow (minutes, arrow, rad) {
+        const angle = minutes * 6 / 180 * Math.PI;
+        arrow.setAttribute("x2", clockCenterWidth + rad * Math.sin(angle));
+        arrow.setAttribute("y2", clockCenterHeight - rad * Math.cos(angle));
+    }
+
+    function str0l(val) {
+        let strVal = val.toString();
+        if (strVal.length < 2) {
+            strVal = '0' + strVal;
+        }
+        return strVal;
+    }
+
+</script>
+</body>
+</html>
