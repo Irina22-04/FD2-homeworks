@@ -17,9 +17,14 @@
 <script>
     const svg = document.getElementById("svg");
     const svgNS = "http://www.w3.org/2000/svg";
+    const coefForRadius = 0.8;
+    const coefForNumber = 0.15;
+    const coefForSecArrow = 0.7;
+    const coefForMinArrow = 0.5;
+    const coefForHourArrow = 0.3;
 
-    const widthArea = parseFloat(svg.getAttribute("width"));
-    const heightArea = parseFloat(svg.getAttribute("height"));
+    const widthArea = svg.getAttribute("width");
+    const heightArea = svg.getAttribute("height");
     const radClock = widthArea > heightArea ? heightArea / 2 : widthArea / 2;
     const clockCenterWidth = widthArea / 2;
     const clockCenterHeight = heightArea / 2;
@@ -35,8 +40,8 @@
         svg.appendChild(elem);
     }
 
-    const radNumb = radClock * 0.8;
-    const radGreen = radClock * 0.15;
+    const radNumb = radClock * coefForRadius;
+    const radGreen = radClock * coefForNumber;
 
     for (let i = 1; i <= 12; i++) {
         const angleNumb = (i * 30) / 180 * Math.PI;
@@ -63,25 +68,25 @@
     createText(digClock, clockCenterWidth, clockCenterHeight / 1.5);
 
     const minArrow = document.createElementNS(svgNS, "line");
-    const minArrowLength = radClock * 0.5;
+    const minArrowLength = radClock * coefForMinArrow;
     createLine(minArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - minArrowLength);
     minArrow.setAttribute("stroke-width", "3");
 
     const secArrow = document.createElementNS(svgNS, "line");
-    const secArrowLength = radClock * 0.7;
+    const secArrowLength = radClock * coefForSecArrow;
     createLine(secArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - secArrowLength);
     secArrow.setAttribute("stroke-width", "2");
 
     const hourArrow = document.createElementNS(svgNS, "line");
-    const hourArrowLength = radClock * 0.3;
-    createLine(hourArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - hourArrowLength);
+    const hourArrowLength = radClock * coefForHourArrow;
+    createLine(hourArrow, clockCenterWidth, clockCenterHeight);
     hourArrow.setAttribute("stroke-width", "4");
 
-    function createLine(elem, x, y, x1, y1,) {
+    function createLine(elem, x, y) {
         elem.setAttribute("x1", x);
         elem.setAttribute("y1", y);
-        elem.setAttribute("x2", x1);
-        elem.setAttribute("y2", y1);
+        elem.setAttribute("x2", x);
+        elem.setAttribute("y2", y);
         elem.setAttribute("stroke", "black");
         svg.appendChild(elem);
     }
