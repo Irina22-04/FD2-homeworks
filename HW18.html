@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        text {
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<canvas id="canvas" height="300" width="300"></canvas>
+
+<script>
+    const canv = document.getElementById("canvas");
+    ctx = canv.getContext('2d');
+
+    const coefForRadius = 0.8;
+    const coefForNumber = 0.15;
+    const coefForSecArrow = 0.7;
+    const coefForMinArrow = 0.5;
+    const coefForHourArrow = 0.3;
+
+    const widthArea = canvas.getAttribute("width");
+    const heightArea = canvas.getAttribute("height");
+    const radClock = widthArea > heightArea ? heightArea / 2 : widthArea / 2;
+    const clockCenterWidth = widthArea / 2;
+    const clockCenterHeight = heightArea / 2;
+    const digClockCenterHeight = clockCenterHeight / 1.5
+
+    const radNumb = radClock * coefForRadius;
+    const radGreen = radClock * coefForNumber;
+
+    ctx.font = '20px TimesNewRoman';
+
+    function drawClock() {
+        ctx.clearRect(0, 0, widthArea, heightArea);
+
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.arc(clockCenterWidth, clockCenterHeight, radClock, 0, 2 * Math.PI, true);
+        ctx.fill();
+
+        ctx.fillStyle = 'green';
+        for (let i = 1; i <= 12; i++) {
+            const angleNumb = (i * 30) / 180 * Math.PI;
+            const y1 = clockCenterHeight - radNumb * Math.cos(angleNumb);
+            const x1 = clockCenterWidth + radNumb * Math.sin(angleNumb);
+
+            ctx.beginPath();
+            ctx.arc(x1, y1, radGreen, 0, Math.PI * 2, true);
+            ctx.fill();
+
+            ctx.fillStyle = 'black';
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(i, x1, y1);
+            ctx.fillStyle = 'green';
+        }
+    }
+
+    ctx.strokeStyle = 'black';
+
+    setInterval(updateTime, 1000);
+
+    function updateTime() {
+        const currTime = new Date();
+        const timeStr = formatTime(currTime);
+        ctx.fillStyle = 'black';
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(timeStr, clockCenterWidth, digClockCenterHeight);
+        ctx.fillStyle = 'green';
+    }
+
+    function formatTime(time) {
+        drawClock();
+
+        const hours = time.getHours();
+        const minutes = time.getMinutes();
+        const seconds = time.getSeconds();
+
+        rotateHourArrow(hours, minutes);
+        rotateMinArrow(minutes, minArrowLength, 3);
+        rotateMinArrow(seconds, secArrowLength, 2);
+        return `${valToStr(hours, 2)}:${valToStr(minutes, 2)}:${valToStr(seconds, 2)}`;
+    }
+
+    const hourArrowLength = radClock * coefForHourArrow;
+
+    function rotateHourArrow(hours, minutes) {
+        const angle = (hours * 30 + minutes * 0.5) / 180 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(clockCenterWidth, clockCenterHeight);
+        const x = clockCenterWidth + hourArrowLength * Math.sin(angle);
+        const y = clockCenterHeight - hourArrowLength * Math.cos(angle);
+        ctx.lineWidth = 4;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    }
+
+    const minArrowLength = radClock * coefForMinArrow;
+    const secArrowLength = radClock * coefForSecArrow;
+
+    function rotateMinArrow(minutes, rad, val) {
+        const angle = minutes * 6 / 180 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(clockCenterWidth, clockCenterHeight);
+        const x = clockCenterWidth + rad * Math.sin(angle);
+        const y = clockCenterHeight - rad * Math.cos(angle);
+        ctx.lineWidth = val;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    }
+
+    function valToStr(val) {
+        let strVal = val.toString();
+        if (strVal.length < 2) {
+            strVal = '0' + strVal;
+        }
+        return strVal;
+    }
+
+</script>
+</body>
+</html>
