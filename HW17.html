@@ -69,12 +69,12 @@
 
     const minArrow = document.createElementNS(svgNS, "line");
     const minArrowLength = radClock * coefForMinArrow;
-    createLine(minArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - minArrowLength);
+    createLine(minArrow, clockCenterWidth, clockCenterHeight);
     minArrow.setAttribute("stroke-width", "3");
 
     const secArrow = document.createElementNS(svgNS, "line");
     const secArrowLength = radClock * coefForSecArrow;
-    createLine(secArrow, clockCenterWidth, clockCenterHeight, clockCenterWidth, clockCenterHeight - secArrowLength);
+    createLine(secArrow, clockCenterWidth, clockCenterHeight);
     secArrow.setAttribute("stroke-width", "2");
 
     const hourArrow = document.createElementNS(svgNS, "line");
