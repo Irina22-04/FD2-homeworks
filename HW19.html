@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .clock {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 40px;
+            display: inline-block;
+        }
+
+        text {
+            font-size: 20px;
+        }
+
+        button {
+            margin-left: 5px;
+            min-width: 60px;
+        }
+
+        .timezone {
+            display: inline-block;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="clock1" class="clock"></div>
+<div id="clock2" class="clock"></div>
+<div id="clock3" class="clock"></div>
+<div id="clock4" class="clock"></div>
+<script>
+
+    const coefForRadius = 0.8;
+    const coefForNumber = 0.15;
+    const coefForSecArrow = 0.7;
+    const coefForMinArrow = 0.5;
+    const coefForHourArrow = 0.3;
+    const coefForCenterHeight = 0.95;
+
+    class Clock {
+        constructor(id, type, city, gmt) {
+
+            switch (type) {
+                case "SVG":
+                    this.view = new ClockViewSVG(id, this, city);
+                    break;
+                case "canvas":
+                    this.view = new ClockViewCanvas(id, this, city);
+                    break;
+            }
+
+            this.showTime = true;
+
+            this.gmt = gmt;
+            this.minutes = '';
+            this.seconds = '';
+            this.hours = '';
+        }
+
+        run() {
+            setInterval(this.updateTime.bind(this), 1000);
+        }
+
+        updateTime() {
+            const currTime = new Date();
+            this.hours = currTime.getUTCHours() + this.gmt;
+            this.minutes = currTime.getMinutes();
+            this.seconds = currTime.getSeconds();
+            if (this.showTime) {
+                this.updateView();
+            }
+        }
+
+        updateView() {
+            this.view.update();
+        }
+    }
+
+    class ClockViewSVG {
+        constructor(id, model, city) {
+
+            this.model = model;
+            this.controller = new ClockControllerButtons(model)
+
+            this.element = document.querySelector(`#${id}`);
+            this.id = id;
+            this.width = this.element.offsetWidth;
+            this.height = this.element.offsetHeight;
+            this.radClock = this.width > (this.height * coefForCenterHeight) ? this.height * coefForCenterHeight / 2 : this.width / 2;
+            this.clockCenterWidth = this.width / 2;
+            this.clockCenterHeight = this.height - this.height * coefForCenterHeight / 2;
+            this.radNumb = this.radClock * coefForRadius;
+            this.radGreen = this.radClock * coefForNumber;
+            this.hourArrowLength = this.radClock * coefForHourArrow;
+            this.minArrowLength = this.radClock * coefForMinArrow;
+            this.secArrowLength = this.radClock * coefForSecArrow;
+            this.city = city;
+        }
+
+        update() {
+            const minArrow = document.querySelector(`#${this.id} .minArrow`);
+            this.rotateMinArrow(this.model.minutes, minArrow, this.minArrowLength);
+            const secArrow = document.querySelector(`#${this.id} .secArrow`);
+            this.rotateMinArrow(this.model.seconds, secArrow, this.secArrowLength);
+            const hourArrow = document.querySelector(`#${this.id} .hourArrow`);
+            this.rotateHourArrow(this.model.hours, this.model.minutes, hourArrow);
+        }
+
+        rotateMinArrow(minutes, arrow, rad) {
+            const angle = minutes * 6 / 180 * Math.PI;
+            arrow.setAttribute("x2", this.clockCenterWidth + rad * Math.sin(angle));
+            arrow.setAttribute("y2", this.clockCenterHeight - rad * Math.cos(angle));
+        }
+
+        rotateHourArrow(hours, minutes, arrow) {
+            const angle = (hours * 30 + minutes * 0.5) / 180 * Math.PI;
+            arrow.setAttribute("x2", this.clockCenterWidth + this.hourArrowLength * Math.sin(angle));
+            arrow.setAttribute("y2", this.clockCenterHeight - this.hourArrowLength * Math.cos(angle));
+        }
+
+        drawClock() {
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("width", this.width);
+            svg.setAttribute("height", this.height);
+
+            const stopButton = document.createElement('button');
+            const startButton = document.createElement('button');
+            startButton.onclick = () => this.controller.showTime(true);
+            stopButton.onclick = () => this.controller.showTime(false);
+            startButton.textContent = "Старт";
+            stopButton.textContent = "Стоп";
+            this.element.appendChild(stopButton);
+            this.element.appendChild(startButton);
+            const timeZone = document.createElement('div');
+            timeZone.classList.add('timezone');
+            timeZone.textContent = `${this.city} (GMT+${this.model.gmt})`;
+            this.element.appendChild(timeZone);
+
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            this.createCircle(circle, this.clockCenterWidth, this.clockCenterHeight, this.radClock, "yellow");
+            this.element
+                .appendChild(svg)
+                .appendChild(circle);
+
+            for (let i = 1; i <= 12; i++) {
+                const angleNumb = (i * 30) / 180 * Math.PI;
+                const y1 = this.clockCenterHeight - this.radNumb * Math.cos(angleNumb);
+                const x1 = this.clockCenterWidth + this.radNumb * Math.sin(angleNumb);
+
+                const greenCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                this.createCircle(greenCircle, x1, y1, this.radGreen, "green");
+                svg.appendChild(greenCircle);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                this.createText(text, x1, y1);
+                text.innerHTML = i;
+                svg.appendChild(text);
+            }
+
+            const hourArrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            hourArrow.classList.add("hourArrow");
+            const secArrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            secArrow.classList.add("secArrow");
+            const minArrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            minArrow.classList.add("minArrow");
+            this.createLine(minArrow, this.clockCenterWidth, this.clockCenterHeight, "3");
+            svg.appendChild(minArrow);
+            this.createLine(secArrow, this.clockCenterWidth, this.clockCenterHeight, "2");
+            svg.appendChild(secArrow);
+            this.createLine(hourArrow, this.clockCenterWidth, this.clockCenterHeight, "4");
+            svg.appendChild(hourArrow);
+
+            this.model.run();
+        }
+
+        createCircle(elem, x, y, r, color) {
+            elem.setAttribute("cx", x);
+            elem.setAttribute("cy", y);
+            elem.setAttribute("r", r);
+            elem.setAttribute("fill", color);
+        }
+
+        createText(elem, x, y) {
+            elem.setAttribute("x", x);
+            elem.setAttribute("y", y);
+            elem.setAttribute("text-anchor", "middle");
+            elem.setAttribute("dominant-baseline", "middle");
+        }
+
+        createLine(elem, x, y, strWidth) {
+            elem.setAttribute("x1", x);
+            elem.setAttribute("y1", y);
+            elem.setAttribute("x2", x);
+            elem.setAttribute("y2", y);
+            elem.setAttribute("stroke", "black");
+            elem.setAttribute("stroke-width", strWidth);
+        }
+    }
+
+    class ClockControllerButtons {
+        constructor(model) {
+            this.model = model
+        }
+
+        showTime(value) {
+            this.model.showTime = value;
+        }
+    }
+
+    class ClockViewCanvas {
+        constructor(id, model, city) {
+
+            this.model = model;
+            this.controller = new ClockControllerButtons(model)
+
+            this.element = document.querySelector(`#${id}`);
+            this.id = id;
+            this.width = this.element.offsetWidth;
+            this.height = this.element.offsetHeight;
+            this.radClock = this.width > (this.height * coefForCenterHeight) ? this.height * coefForCenterHeight / 2 : this.width / 2;
+            this.clockCenterWidth = this.width / 2;
+            this.clockCenterHeight = this.height - this.height * coefForCenterHeight / 2;
+            this.radNumb = this.radClock * coefForRadius;
+            this.radGreen = this.radClock * coefForNumber;
+            this.hourArrowLength = this.radClock * coefForHourArrow;
+            this.minArrowLength = this.radClock * coefForMinArrow;
+            this.secArrowLength = this.radClock * coefForSecArrow;
+            this.city = city;
+            this.ctx = '';
+        }
+
+        drawClock() {
+            const canv = document.createElement("canvas");
+            this.ctx = canv.getContext('2d');
+            canv.setAttribute("width", this.width);
+            canv.setAttribute("height", this.height);
+
+            const stopButton = document.createElement('button');
+            const startButton = document.createElement('button');
+            startButton.onclick = () => this.controller.showTime(true);
+            stopButton.onclick = () => this.controller.showTime(false);
+            startButton.textContent = "Старт";
+            stopButton.textContent = "Стоп";
+            this.element.appendChild(stopButton);
+            this.element.appendChild(startButton);
+            const timeZone = document.createElement('div');
+            timeZone.classList.add('timezone');
+            timeZone.textContent = `${this.city} (GMT+${this.model.gmt})`;
+            this.element.appendChild(timeZone);
+
+            this.element.appendChild(canv);
+            this.ctx.font = '20px TimesNewRoman';
+
+            this.update();
+            this.model.run();
+        }
+
+        update() {
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.ctx.fillStyle = 'yellow';
+            this.ctx.beginPath();
+            this.ctx.arc(this.clockCenterWidth, this.clockCenterHeight, this.radClock, 0, 2 * Math.PI, true);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = 'green';
+            for (let i = 1; i <= 12; i++) {
+                const angleNumb = (i * 30) / 180 * Math.PI;
+                const y1 = this.clockCenterHeight - this.radNumb * Math.cos(angleNumb);
+                const x1 = this.clockCenterWidth + this.radNumb * Math.sin(angleNumb);
+
+                this.ctx.beginPath();
+                this.ctx.arc(x1, y1, this.radGreen, 0, Math.PI * 2, true);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = 'black';
+                this.ctx.textAlign = "center";
+                this.ctx.textBaseline = "middle";
+                this.ctx.fillText(i, x1, y1);
+                this.ctx.fillStyle = 'green';
+            }
+
+            this.ctx.strokeStyle = 'black';
+
+            const angle = (this.model.hours * 30 + this.model.minutes * 0.5) / 180 * Math.PI;
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.clockCenterWidth, this.clockCenterHeight);
+            const x = this.clockCenterWidth + this.hourArrowLength * Math.sin(angle);
+            const y = this.clockCenterHeight - this.hourArrowLength * Math.cos(angle);
+            this.ctx.lineWidth = 4;
+            this.ctx.lineTo(x, y);
+            this.ctx.stroke();
+
+            this.rotateMinArrow(this.model.minutes, this.minArrowLength, 3);
+            this.rotateMinArrow(this.model.seconds, this.secArrowLength, 2);
+        }
+
+        rotateMinArrow(minutes, rad, val) {
+            const angle = minutes * 6 / 180 * Math.PI;
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.clockCenterWidth, this.clockCenterHeight);
+            const x = this.clockCenterWidth + rad * Math.sin(angle);
+            const y = this.clockCenterHeight - rad * Math.cos(angle);
+            this.ctx.lineWidth = val;
+            this.ctx.lineTo(x, y);
+            this.ctx.stroke();
+        }
+    }
+
+    const clock1 = new Clock("clock1", "SVG", "Нью-Йорк", -5);
+    clock1.view.drawClock();
+
+    const clock2 = new Clock("clock2", "canvas", "Лондон", 0);
+    clock2.view.drawClock();
+
+    const clock3 = new Clock("clock3", "SVG", "Минск", +3);
+    clock3.view.drawClock();
+
+    const clock4 = new Clock("clock4", "canvas", "Токио", +9);
+    clock4.view.drawClock();
+
+
+</script>
+</body>
+</html>
