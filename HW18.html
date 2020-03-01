@@ -5,9 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        text {
-            font-size: 20px;
-        }
+
     </style>
 </head>
 
@@ -24,12 +22,12 @@
     const coefForMinArrow = 0.5;
     const coefForHourArrow = 0.3;
 
-    const widthArea = canvas.getAttribute("width");
-    const heightArea = canvas.getAttribute("height");
+    const widthArea = canv.getAttribute("width");
+    const heightArea = canv.getAttribute("height");
     const radClock = widthArea > heightArea ? heightArea / 2 : widthArea / 2;
     const clockCenterWidth = widthArea / 2;
     const clockCenterHeight = heightArea / 2;
-    const digClockCenterHeight = clockCenterHeight / 1.5
+    const digClockCenterHeight = clockCenterHeight / 1.5;
 
     const radNumb = radClock * coefForRadius;
     const radGreen = radClock * coefForNumber;
