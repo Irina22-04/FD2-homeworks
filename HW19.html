@@ -5,6 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        .invis {
+            width: 100%;
+            display: inline-block;
+        }
+
         .clock {
             width: 300px;
             height: 300px;
@@ -31,8 +36,10 @@
 <body>
 <div id="clock1" class="clock"></div>
 <div id="clock2" class="clock"></div>
+<div class="invis"></div>
 <div id="clock3" class="clock"></div>
 <div id="clock4" class="clock"></div>
+<div class="invis"></div>
 <script>
 
     const COEF_FOR_RADIUS = 0.8;
@@ -97,6 +104,7 @@
             this.secArrowLength = this.radClock * COEF_FOR_SEC_ARROW;
             this.city = city;
         }
+
         drawButtons() {
             const stopButton = document.createElement('button');
             const startButton = document.createElement('button');
