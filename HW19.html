@@ -55,7 +55,6 @@
             }
 
             this.showTime = true;
-
             this.gmt = gmt;
             this.minutes = '';
             this.seconds = '';
@@ -81,14 +80,11 @@
         }
     }
 
-    class ClockViewSVG {
+    class GeneralClock {
         constructor(id, model, city) {
-
             this.model = model;
-            this.controller = new ClockControllerButtons(model)
-
+            this.controller = new ClockControllerButtons(model);
             this.element = document.querySelector(`#${id}`);
-            this.id = id;
             this.width = this.element.offsetWidth;
             this.height = this.element.offsetHeight;
             this.radClock = this.width > (this.height * coefForCenterHeight) ? this.height * coefForCenterHeight / 2 : this.width / 2;
@@ -100,6 +96,27 @@
             this.minArrowLength = this.radClock * coefForMinArrow;
             this.secArrowLength = this.radClock * coefForSecArrow;
             this.city = city;
+        }
+        drawButtons() {
+            const stopButton = document.createElement('button');
+            const startButton = document.createElement('button');
+            startButton.onclick = () => this.controller.showTime(true);
+            stopButton.onclick = () => this.controller.showTime(false);
+            startButton.textContent = "Старт";
+            stopButton.textContent = "Стоп";
+            this.element.appendChild(stopButton);
+            this.element.appendChild(startButton);
+            const timeZone = document.createElement('div');
+            timeZone.classList.add('timezone');
+            timeZone.textContent = `${this.city} (GMT+${this.model.gmt})`;
+            this.element.appendChild(timeZone);
+        }
+    }
+
+    class ClockViewSVG extends GeneralClock {
+        constructor(id, model, city) {
+            super(id, model, city);
+            this.id = id;
         }
 
         update() {
@@ -128,18 +145,7 @@
             svg.setAttribute("width", this.width);
             svg.setAttribute("height", this.height);
 
-            const stopButton = document.createElement('button');
-            const startButton = document.createElement('button');
-            startButton.onclick = () => this.controller.showTime(true);
-            stopButton.onclick = () => this.controller.showTime(false);
-            startButton.textContent = "Старт";
-            stopButton.textContent = "Стоп";
-            this.element.appendChild(stopButton);
-            this.element.appendChild(startButton);
-            const timeZone = document.createElement('div');
-            timeZone.classList.add('timezone');
-            timeZone.textContent = `${this.city} (GMT+${this.model.gmt})`;
-            this.element.appendChild(timeZone);
+            this.drawButtons();
 
             const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             this.createCircle(circle, this.clockCenterWidth, this.clockCenterHeight, this.radClock, "yellow");
@@ -212,25 +218,9 @@
         }
     }
 
-    class ClockViewCanvas {
+    class ClockViewCanvas extends GeneralClock {
         constructor(id, model, city) {
-
-            this.model = model;
-            this.controller = new ClockControllerButtons(model)
-
-            this.element = document.querySelector(`#${id}`);
-            this.id = id;
-            this.width = this.element.offsetWidth;
-            this.height = this.element.offsetHeight;
-            this.radClock = this.width > (this.height * coefForCenterHeight) ? this.height * coefForCenterHeight / 2 : this.width / 2;
-            this.clockCenterWidth = this.width / 2;
-            this.clockCenterHeight = this.height - this.height * coefForCenterHeight / 2;
-            this.radNumb = this.radClock * coefForRadius;
-            this.radGreen = this.radClock * coefForNumber;
-            this.hourArrowLength = this.radClock * coefForHourArrow;
-            this.minArrowLength = this.radClock * coefForMinArrow;
-            this.secArrowLength = this.radClock * coefForSecArrow;
-            this.city = city;
+            super(id, model, city);
             this.ctx = '';
         }
 
@@ -240,18 +230,7 @@
             canv.setAttribute("width", this.width);
             canv.setAttribute("height", this.height);
 
-            const stopButton = document.createElement('button');
-            const startButton = document.createElement('button');
-            startButton.onclick = () => this.controller.showTime(true);
-            stopButton.onclick = () => this.controller.showTime(false);
-            startButton.textContent = "Старт";
-            stopButton.textContent = "Стоп";
-            this.element.appendChild(stopButton);
-            this.element.appendChild(startButton);
-            const timeZone = document.createElement('div');
-            timeZone.classList.add('timezone');
-            timeZone.textContent = `${this.city} (GMT+${this.model.gmt})`;
-            this.element.appendChild(timeZone);
+            this.drawButtons();
 
             this.element.appendChild(canv);
             this.ctx.font = '20px TimesNewRoman';
@@ -322,7 +301,6 @@
 
     const clock4 = new Clock("clock4", "canvas", "Токио", +9);
     clock4.view.drawClock();
-
 
 </script>
 </body>
