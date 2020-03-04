@@ -150,7 +150,7 @@
 
     function checkRight(ball, ballSpeed, lRacket, rRacket) {
         if (((parseFloat(ball.style.left) + DIAM_BALL) >= FIELD_WIDTH - RACKET_WIDTH)) {
-            if (checkRightRacket(ball, lRacket, rRacket)) {
+            if (checkRightRacket(ball, rRacket, lRacket)) {
                 ballSpeed.side = "left";
                 moveBall(ball, ballSpeed, lRacket, rRacket);
             }
