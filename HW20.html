@@ -166,7 +166,7 @@
         if ((parseFloat(ball.style.left) <= RACKET_WIDTH)) {
             if (checkLeftRacket(ball, lRacket)) {
                 ballSpeed.side = "right";
-                moveBall(ball, ballSpeed, rRacket);
+                moveBall(ball, ballSpeed, lRacket, rRacket);
             }
             if (touchLeftContainer(ball)) {
                 clearInterval(timer);
