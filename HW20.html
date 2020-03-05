@@ -27,8 +27,17 @@
             position: absolute;
         }
 
-        .result span {
-            font-size: 20px;
+        .result {
+            display: inline-block;
+            position: relative;
+            left: calc(20% + 160px);
+            font-size: 40px;
+        }
+        .start {
+            display: inline-block;
+            position: relative;
+            left: 20%;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -48,186 +57,174 @@
     const RACKET_WIDTH = 10;
     const RACKET_HEIGHT = 90;
 
-    let greenResult = 0;
-    let violetResult = 0;
+    (function() {
+        let greenResult = 0;
+        let violetResult = 0;
 
-    let timer;
+        let timer;
 
-    function createGame() {
-        const field = document.querySelector('.field');
-        field.style.width = `${FIELD_WIDTH}px`;
-        field.style.height = `${FIELD_HEIGHT}px`;
+        function createGame() {
+            const field = document.querySelector('.field');
+            field.style.width = `${FIELD_WIDTH}px`;
+            field.style.height = `${FIELD_HEIGHT}px`;
 
-        const lRacket = document.querySelector('.lRacket');
-        lRacket.style.width = `${RACKET_WIDTH}px`;
-        lRacket.style.height = `${RACKET_HEIGHT}px`;
+            const lRacket = document.querySelector('.lRacket');
+            lRacket.style.width = `${RACKET_WIDTH}px`;
+            lRacket.style.height = `${RACKET_HEIGHT}px`;
 
-        const rRacket = document.querySelector('.rRacket');
-        rRacket.style.width = `${RACKET_WIDTH}px`;
-        rRacket.style.height = `${RACKET_HEIGHT}px`;
+            const rRacket = document.querySelector('.rRacket');
+            rRacket.style.width = `${RACKET_WIDTH}px`;
+            rRacket.style.height = `${RACKET_HEIGHT}px`;
 
-        const ball = document.querySelector('.ball');
-        ball.style.width = `${DIAM_BALL}px`;
-        ball.style.height = `${DIAM_BALL}px`;
+            const ball = document.querySelector('.ball');
+            ball.style.width = `${DIAM_BALL}px`;
+            ball.style.height = `${DIAM_BALL}px`;
 
-        setElem(lRacket, rRacket, ball);
-        setResult();
-        document.addEventListener("keydown", moveRacket.bind(null, lRacket, rRacket));
+            setElem(lRacket, rRacket, ball);
+            setResult();
+            document.addEventListener("keydown", moveRacket.bind(null, lRacket, rRacket));
 
-        const ballSpeed = {
-            x: 1,
-            y: 0,
-            side: "right",
-            direction: "up",
-        };
+            const ballSpeed = {
+                x: 2.5,
+                y: 0,
+                side: "right",
+                direction: "up",
+            };
 
-        const startButton = document.querySelector('.start');
-        startButton.addEventListener("click", startGame.bind(null, ball, ballSpeed, lRacket, rRacket));
-    }
-    createGame();
-
-    function setElem(lRacket, rRacket, ball) {
-        lRacket.style.left = '0';
-        lRacket.style.top = `${(FIELD_HEIGHT - RACKET_HEIGHT) / 2}px`;
-
-        rRacket.style.left = `${FIELD_WIDTH - RACKET_WIDTH}px`;
-        rRacket.style.top = `${(FIELD_HEIGHT - RACKET_HEIGHT) / 2}px`;
-
-        ball.style.left = `${(FIELD_WIDTH - DIAM_BALL) / 2}px`;
-        ball.style.top = `${(FIELD_HEIGHT - DIAM_BALL) / 2}px`;
-    }
-
-    function setResult() {
-        const lResult = document.querySelector('.result .green');
-        lResult.textContent = `${greenResult}`;
-
-        const rResult = document.querySelector('.result .violet');
-        rResult.textContent = `${violetResult}`;
-    }
-
-    function startGame(ball, ballSpeed, lRacket, rRacket) {
-        setElem(lRacket, rRacket, ball);
-
-        if (Math.floor(Math.random() * 2)) {
-            ballSpeed.side = "left";
-        }
-        ballSpeed.y = Math.random() - 0.5;
-        timer = setInterval(moveBall.bind(null, ball, ballSpeed, lRacket, rRacket), 15);
-    }
-
-    function moveBall(ball, ballSpeed, lRacket, rRacket) {
-        switch (ballSpeed.side) {
-            case "right":
-                ball.style.left = `${parseFloat(ball.style.left) + ballSpeed.x}px`;
-                checkRight(ball, ballSpeed, lRacket, rRacket);
-                break;
-            case "left":
-                ball.style.left = `${parseFloat(ball.style.left) - ballSpeed.x}px`;
-                checkLeft(ball, ballSpeed, lRacket, rRacket);
-                break;
+            const startButton = document.querySelector('.start');
+            startButton.addEventListener("click", startGame.bind(null, ball, ballSpeed, lRacket, rRacket));
         }
 
-        switch (ballSpeed.direction) {
-            case "up":
-                ball.style.top = `${parseFloat(ball.style.top) + ballSpeed.y}px`;
-                checkUp(ball, ballSpeed);
-                break;
-            case "down":
-                ball.style.top = `${parseFloat(ball.style.top) - ballSpeed.y}px`;
-                checkUp(ball, ballSpeed);
-                break;
-        }
-    }
+        createGame();
 
-    function checkUp(ball, ballSpeed) {
-        if (parseFloat(ball.style.top) <= 0) {
-            switch (ballSpeed.direction) {
-                case "up":
-                    ballSpeed.direction = "down";
-                    break;
-                case "down":
-                    ballSpeed.direction = "up";
-                    break;
-            }
-        }
-        if (parseFloat(ball.style.top)+ DIAM_BALL >= FIELD_HEIGHT) {
-            switch (ballSpeed.direction) {
-                case "up":
-                    ballSpeed.direction = "down";
-                    break;
-                case "down":
-                    ballSpeed.direction = "up";
-                    break;
-            }
-        }
-    }
+        function setElem(lRacket, rRacket, ball) {
+            lRacket.style.left = '0';
+            lRacket.style.top = `${(FIELD_HEIGHT - RACKET_HEIGHT) / 2}px`;
 
-    function checkRight(ball, ballSpeed, lRacket, rRacket) {
-        if (((parseFloat(ball.style.left) + DIAM_BALL) >= FIELD_WIDTH - RACKET_WIDTH)) {
-            if (checkRightRacket(ball, rRacket, lRacket)) {
+            rRacket.style.left = `${FIELD_WIDTH - RACKET_WIDTH}px`;
+            rRacket.style.top = `${(FIELD_HEIGHT - RACKET_HEIGHT) / 2}px`;
+
+            ball.style.left = `${(FIELD_WIDTH - DIAM_BALL) / 2}px`;
+            ball.style.top = `${(FIELD_HEIGHT - DIAM_BALL) / 2}px`;
+        }
+
+        function setResult() {
+            const lResult = document.querySelector('.result .green');
+            lResult.textContent = `${greenResult}`;
+
+            const rResult = document.querySelector('.result .violet');
+            rResult.textContent = `${violetResult}`;
+        }
+
+        function startGame(ball, ballSpeed, lRacket, rRacket) {
+            setElem(lRacket, rRacket, ball);
+
+            if (Math.floor(Math.random() * 2)) {
                 ballSpeed.side = "left";
-                moveBall(ball, ballSpeed, lRacket, rRacket);
             }
-            if (touchRightContainer(ball)) {
-                clearInterval(timer);
-                greenResult++;
-                setResult();
+            ballSpeed.y = Math.random() - 0.5;
+            timer = setInterval(moveBall.bind(null, ball, ballSpeed, lRacket, rRacket), 15);
+        }
+
+        function moveBall(ball, ballSpeed, lRacket, rRacket) {
+            switch (ballSpeed.side) {
+                case "right":
+                    ball.style.left = `${parseFloat(ball.style.left) + ballSpeed.x}px`;
+                    checkRight(ball, ballSpeed, lRacket, rRacket);
+                    break;
+                case "left":
+                    ball.style.left = `${parseFloat(ball.style.left) - ballSpeed.x}px`;
+                    checkLeft(ball, ballSpeed, lRacket, rRacket);
+                    break;
+            }
+
+            switch (ballSpeed.direction) {
+                case "up":
+                    ball.style.top = `${parseFloat(ball.style.top) + ballSpeed.y}px`;
+                    checkUp(ball, ballSpeed);
+                    break;
+                case "down":
+                    ball.style.top = `${parseFloat(ball.style.top) - ballSpeed.y}px`;
+                    checkUp(ball, ballSpeed);
+                    break;
             }
         }
-    }
 
-    function checkLeft(ball, ballSpeed, lRacket, rRacket) {
-        if ((parseFloat(ball.style.left) <= RACKET_WIDTH)) {
-            if (checkLeftRacket(ball, lRacket)) {
-                ballSpeed.side = "right";
-                moveBall(ball, ballSpeed, lRacket, rRacket);
-            }
-            if (touchLeftContainer(ball)) {
-                clearInterval(timer);
-                violetResult++;
-                setResult();
+        function checkUp(ball, ballSpeed) {
+            if ((parseFloat(ball.style.top) <= 0) || (parseFloat(ball.style.top) + DIAM_BALL >= FIELD_HEIGHT)) {
+                ballSpeed.direction = ballSpeed.direction === "up" ? "down" : "up";
             }
         }
-    }
 
-    function touchRightContainer(ball) {
-        return (parseFloat(ball.style.left) + DIAM_BALL) >= FIELD_WIDTH;
-    }
-
-    function touchLeftContainer(ball) {
-        return parseFloat(ball.style.left) <= 0;
-    }
-
-    function checkRightRacket(ball, rRacket) {
-        return ((parseFloat(ball.style.top) + DIAM_BALL) >= parseFloat(rRacket.style.top) && (parseFloat(rRacket.style.top) + RACKET_HEIGHT) >= parseFloat(ball.style.top));
-    }
-
-    function checkLeftRacket(ball, lRacket) {
-        return ((parseFloat(ball.style.top) + DIAM_BALL) >= parseFloat(lRacket.style.top) && (parseFloat(lRacket.style.top) + RACKET_HEIGHT) >= parseFloat(ball.style.top));
-    }
-
-    function moveRacket(lRacket, rRacket) {
-        if (event.key === "Shift") {
-            if (parseFloat(lRacket.style.top) > 0) {
-                lRacket.style.top = `${parseFloat(lRacket.style.top) - 1}px`;
+        function checkRight(ball, ballSpeed, lRacket, rRacket) {
+            if (((parseFloat(ball.style.left) + DIAM_BALL) >= FIELD_WIDTH - RACKET_WIDTH)) {
+                if (checkRightRacket(ball, rRacket, lRacket)) {
+                    ballSpeed.side = "left";
+                    moveBall(ball, ballSpeed, lRacket, rRacket);
+                }
+                if (touchRightContainer(ball)) {
+                    clearInterval(timer);
+                    ballSpeed.y = 0;
+                    greenResult++;
+                    setResult();
+                }
             }
         }
-        if (event.key === "Control") {
-            if (parseFloat(lRacket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT) {
-                lRacket.style.top = `${parseFloat(lRacket.style.top) + 1}px`;
+
+        function checkLeft(ball, ballSpeed, lRacket, rRacket) {
+            if ((parseFloat(ball.style.left) <= RACKET_WIDTH)) {
+                if (checkLeftRacket(ball, lRacket)) {
+                    ballSpeed.side = "right";
+                    moveBall(ball, ballSpeed, lRacket, rRacket);
+                }
+                if (touchLeftContainer(ball)) {
+                    clearInterval(timer);
+                    ballSpeed.y = 0;
+                    violetResult++;
+                    setResult();
+                }
             }
         }
-        if (event.key === "ArrowUp") {
-            if (parseFloat(rRacket.style.top) > 0) {
-                rRacket.style.top = `${parseFloat(rRacket.style.top) - 1}px`;
+
+        function touchRightContainer(ball) {
+            return (parseFloat(ball.style.left) + DIAM_BALL) >= FIELD_WIDTH;
+        }
+
+        function touchLeftContainer(ball) {
+            return parseFloat(ball.style.left) <= 0;
+        }
+
+        function checkRightRacket(ball, rRacket) {
+            return ((parseFloat(ball.style.top) + DIAM_BALL) >= parseFloat(rRacket.style.top) && (parseFloat(rRacket.style.top) + RACKET_HEIGHT) >= parseFloat(ball.style.top));
+        }
+
+        function checkLeftRacket(ball, lRacket) {
+            return ((parseFloat(ball.style.top) + DIAM_BALL) >= parseFloat(lRacket.style.top) && (parseFloat(lRacket.style.top) + RACKET_HEIGHT) >= parseFloat(ball.style.top));
+        }
+
+        function moveRacket(lRacket, rRacket) {
+            if (event.key === "Shift") {
+                if (parseFloat(lRacket.style.top) > 0) {
+                    lRacket.style.top = `${parseFloat(lRacket.style.top) - 3}px`;
+                }
+            }
+            if (event.key === "Control") {
+                if (parseFloat(lRacket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT) {
+                    lRacket.style.top = `${parseFloat(lRacket.style.top) + 3}px`;
+                }
+            }
+            if (event.key === "ArrowUp") {
+                if (parseFloat(rRacket.style.top) > 0) {
+                    rRacket.style.top = `${parseFloat(rRacket.style.top) - 3}px`;
+                }
+            }
+            if (event.key === "ArrowDown") {
+                if (parseFloat(rRacket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT) {
+                    rRacket.style.top = `${parseFloat(rRacket.style.top) + 3}px`;
+                }
             }
         }
-        if (event.key === "ArrowDown") {
-            if (parseFloat(rRacket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT) {
-                rRacket.style.top = `${parseFloat(rRacket.style.top) + 1}px`;
-            }
-        }
-    }
+    })();
 
 </script>
 </body>
