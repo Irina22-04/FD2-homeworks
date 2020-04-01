@@ -81,6 +81,7 @@
     const hourArrowLength = radClock * coefForHourArrow;
     createLine(hourArrow, clockCenterWidth, clockCenterHeight);
     hourArrow.setAttribute("stroke-width", "4");
+    updateTime();
 
     function createLine(elem, x, y) {
         elem.setAttribute("x1", x);
@@ -90,6 +91,7 @@
         elem.setAttribute("stroke", "black");
         svg.appendChild(elem);
     }
+
 
     setInterval(updateTime, 1000);
 
