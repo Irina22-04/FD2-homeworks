@@ -33,6 +33,7 @@
             left: calc(20% + 160px);
             font-size: 40px;
         }
+
         .start {
             display: inline-block;
             position: relative;
@@ -57,11 +58,14 @@
     const RACKET_WIDTH = 10;
     const RACKET_HEIGHT = 90;
 
-    (function() {
+    (function () {
         let greenResult = 0;
         let violetResult = 0;
 
         let timer;
+
+        let lRacketSpeed = 0;
+        let rRacketSpeed = 0;
 
         function createGame() {
             const field = document.querySelector('.field');
@@ -82,7 +86,8 @@
 
             setElem(lRacket, rRacket, ball);
             setResult();
-            document.addEventListener("keydown", moveRacket.bind(null, lRacket, rRacket));
+            document.addEventListener("keydown", setSpeed.bind(null, lRacket, rRacket));
+            document.addEventListener("keyup", resetSpeed.bind(null, lRacket, rRacket));
 
             const ballSpeed = {
                 x: 2.5,
@@ -117,13 +122,27 @@
         }
 
         function startGame(ball, ballSpeed, lRacket, rRacket) {
+            if (timer) {
+                clearInterval(timer);
+            }
             setElem(lRacket, rRacket, ball);
 
             if (Math.floor(Math.random() * 2)) {
                 ballSpeed.side = "left";
             }
+
+            if (ballSpeed.x !== 2.5) {
+                ballSpeed.x = 2.5;
+            }
+
             ballSpeed.y = Math.random() - 0.5;
-            timer = setInterval(moveBall.bind(null, ball, ballSpeed, lRacket, rRacket), 15);
+            timer = setInterval(moveGame.bind(null, ball, ballSpeed, lRacket, rRacket), 15);
+        }
+
+        function moveGame(ball, ballSpeed, lRacket, rRacket) {
+            moveBall(ball, ballSpeed, lRacket, rRacket);
+            moveRacket(rRacket, rRacketSpeed);
+            moveRacket(lRacket, lRacketSpeed);
         }
 
         function moveBall(ball, ballSpeed, lRacket, rRacket) {
@@ -202,28 +221,46 @@
             return ((parseFloat(ball.style.top) + DIAM_BALL) >= parseFloat(lRacket.style.top) && (parseFloat(lRacket.style.top) + RACKET_HEIGHT) >= parseFloat(ball.style.top));
         }
 
-        function moveRacket(lRacket, rRacket) {
-            if (event.key === "Shift") {
-                if (parseFloat(lRacket.style.top) > 0) {
-                    lRacket.style.top = `${parseFloat(lRacket.style.top) - 3}px`;
-                }
-            }
-            if (event.key === "Control") {
-                if (parseFloat(lRacket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT) {
-                    lRacket.style.top = `${parseFloat(lRacket.style.top) + 3}px`;
-                }
-            }
-            if (event.key === "ArrowUp") {
-                if (parseFloat(rRacket.style.top) > 0) {
-                    rRacket.style.top = `${parseFloat(rRacket.style.top) - 3}px`;
-                }
-            }
-            if (event.key === "ArrowDown") {
-                if (parseFloat(rRacket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT) {
-                    rRacket.style.top = `${parseFloat(rRacket.style.top) + 3}px`;
-                }
+        function setSpeed(lracket, rRacket) {
+            switch (event.key) {
+                case "Shift":
+                    lRacketSpeed = -1;
+                    break;
+                case "Control":
+                    lRacketSpeed = 1;
+                    break;
+                case "ArrowUp":
+                    rRacketSpeed = -1;
+                    break;
+                case "ArrowDown":
+                    rRacketSpeed = 1;
+                    break;
             }
         }
+
+        function moveRacket(racket, speed) {
+            if (checkContainerBorderRacket(racket, speed)) {
+                racket.style.top = `${parseFloat(racket.style.top) + speed}px`;
+            }
+        }
+
+        function checkContainerBorderRacket(racket, speed) {
+            return (speed < 0 && parseFloat(racket.style.top) > 0) || (speed > 0 && parseFloat(racket.style.top) + RACKET_HEIGHT < FIELD_HEIGHT);
+        }
+
+        function resetSpeed(lRacket, rRacket) {
+            switch (event.key) {
+                case "Shift":
+                case "Control":
+                    lRacketSpeed = 0;
+                    break;
+                case "ArrowUp":
+                case "ArrowDown":
+                    rRacketSpeed = 0;
+                    break;
+            }
+        }
+
     })();
 
 </script>
